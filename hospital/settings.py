@@ -24,14 +24,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-i!y^_u(7%7s64tl0umdyaaoy!a-34+h+k#+md$#%p77tg%-e&3"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG =False
 
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     ".onrender.com",  # <-- your actual Render domain
 ]
-
+    
 
 
 # Application definition
@@ -140,13 +140,38 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "akashdhaigude1907@gmail.com"
-EMAIL_HOST_PASSWORD = "krtxyzyhxeegdqda"
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = "akashdhaigude1907@gmail.com"
+# EMAIL_HOST_PASSWORD = "krtxyzyhxeegdqda"
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+import os
+
+# ================= EMAIL (PRODUCTION - SENDGRID) =================
+
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.sendgrid.net"
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+
+# EMAIL_HOST_USER = "apikey"
+# EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_API_KEY")
+
+# DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
+
+
+if not DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.sendgrid.net"
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = "apikey"
+    EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_API_KEY")
+    DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
+
 
 JAZZMIN_SETTINGS = {
     "site_title": "Hospital Admin",
@@ -156,3 +181,8 @@ JAZZMIN_SETTINGS = {
     "navigation_expanded": True,
     "custom_css": "css/jazzmin_custom.css",
 }
+
+# ================= LOCAL DEVELOPMENT =================
+# if DEBUG:
+#     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+#     DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
