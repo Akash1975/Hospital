@@ -27,10 +27,11 @@ SECRET_KEY = "django-insecure-i!y^_u(7%7s64tl0umdyaaoy!a-34+h+k#+md$#%p77tg%-e&3
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    "localhost",  # for local testing
-    "127.0.0.1",  # also local
-    "your-app.onrender.com",  # your Render domain
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com",  # <-- your actual Render domain
 ]
+
 
 
 # Application definition
