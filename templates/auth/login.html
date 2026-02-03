@@ -1,0 +1,108 @@
+{% extends "layout/main.html" %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
+<style>
+    .alert {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    /* 🔝 Top fixed message */
+    .top-message {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        width: 90%;
+        max-width: 500px;
+        text-align: center;
+    }
+</style>
+
+<!-- ✅ TOP MESSAGE SECTION -->
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} top-message" id="autoHideMsg">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <!-- LEFT IMAGE SECTION -->
+        <div class="auth-left">
+            <img src="{% static 'images/Doctor.jpg' %}" alt="Doctor Image">
+            <div class="bottom-blue"></div>
+
+            <div class="overlay">
+                <h5>Welcome to</h5>
+                <h3>Invision</h3>
+                <h5>Hospital Management System</h5>
+                <small>Best based healthcare management platform</small>
+            </div>
+        </div>
+
+        <!-- RIGHT FORM SECTION -->
+        <div class="auth-right">
+            <h3>Login Account</h3>
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    Please fix the errors below.
+                </div>
+                {% endif %}
+
+                <!-- Username -->
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" class="form-control" placeholder="Enter username"
+                        value="{{ form.username.value|default:'' }}" required>
+                    <small class="text-danger">{{ form.username.errors }}</small>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+                    <small class="text-danger">{{ form.password.errors }}</small>
+                </div>
+
+                <a href="{% url 'forgot_password' %}" class="d-block mt-2">
+                    Forgot Password?
+                </a>
+
+                <button type="submit" class="btn btn-primary w-100 mt-3">
+                    Login
+                </button>
+
+                <p class="text-center mt-3">
+                    Don't have an account?
+                    <a href="{% url 'register' %}">Register</a>
+                </p>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<!-- ✅ AUTO HIDE AFTER 5 SECONDS (NO ANIMATION) -->
+<script>
+    setTimeout(function () {
+        const msg = document.getElementById("autoHideMsg");
+        if (msg) {
+            msg.style.display = "none";
+        }
+    }, 5000);
+</script>
+
+{% endblock %}

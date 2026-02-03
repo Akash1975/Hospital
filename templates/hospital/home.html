@@ -1,0 +1,315 @@
+{% extends "layout/main.html" %}
+{% load static %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<!-- ================= PROFILE SIDEBAR STYLES ================= -->
+<style>
+  .profile-panel {
+    position: fixed;
+    top: 0;
+    right: -360px;
+    width: 360px;
+    height: 100%;
+    background: #ffffff;
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.2);
+    transition: right 0.3s ease-in-out;
+    z-index: 1050;
+  }
+
+  .profile-panel.active {
+    right: 0;
+  }
+
+  .profile-panel img {
+    object-fit: cover;
+  }
+
+  /* ========== MESSAGE ANIMATION ========== */
+  .animated-message {
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: slideFadeIn 0.5s forwards;
+    margin-bottom: 10px;
+  }
+
+  @keyframes slideFadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideFadeOut {
+    to {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
+</style>
+
+<!-- ================= MESSAGES ================= -->
+{% if messages %}
+<div class="fixed-top d-flex flex-column align-items-center mt-3" style="z-index: 1100;">
+  {% for message in messages %}
+  <div class="alert 
+        {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} 
+        text-center shadow-sm animated-message" style="min-width: 300px; max-width: 600px;">
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+  // Hide messages after 5 seconds with fade-out animation
+  setTimeout(() => {
+    const messages = document.querySelectorAll('.animated-message');
+    messages.forEach(msg => {
+      msg.style.animation = 'slideFadeOut 0.5s forwards';
+    });
+  }, 5000);
+</script>
+{% endif %}
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-primary" href="#">Invision Hospital</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="#doctors">Doctors</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+
+        <!-- PROFILE ICON -->
+        <li class="nav-item">
+          {% if user.profile.profile_image %}
+          <img src="{{ user.profile.profile_image.url }}" id="profileIcon" class="rounded-circle border border-2"
+            width="60" height="60" style="cursor: pointer" />
+          {% else %}
+          <img
+            src="https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=0d6efd&color=fff"
+            id="profileIcon" class="rounded-circle border border-2 border-primary" width="60" height="60"
+            style="cursor: pointer" alt="Profile" />
+          {% endif %}
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= PROFILE SIDEBAR ================= -->
+<div id="profilePanel" class="profile-panel">
+  <!-- HEADER -->
+  <div class="text-center border-bottom p-4">
+    {% if user.profile.profile_image %}
+    <img src="{{ user.profile.profile_image.url }}" class="rounded-circle" width="100" height="100" />
+    {% else %}
+    <img src="https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=0d6efd&color=fff"
+      class="rounded-circle" width="100" height="100" />
+    {% endif %}
+
+    <a href="{% url 'home' %}" class="btn btn-sm btn-outline-secondary position-absolute start-0 top-0 m-3">❌</a>
+    <h5 class="mb-0 mt-2">{{ user.first_name }} {{ user.last_name }}</h5>
+    <small class="text-muted">@{{ user.username }}</small>
+  </div>
+
+  <!-- BODY -->
+
+  <div class="p-4">
+
+    <div class="d-flex align-items-center mb-3">
+      <i class="bi bi-envelope text-primary me-2"></i>
+      <span>First Name : {{ user.first_name }}</span>
+    </div>
+
+    <div class="d-flex align-items-center mb-3">
+      <i class="bi bi-envelope text-primary me-2"></i>
+      <span>Last Name : {{ user.last_name }}</span>
+    </div>
+
+    <div class="d-flex align-items-center mb-3">
+      <i class="bi bi-person text-primary me-2"></i>
+      <span>Username : {{ user.username }}</span>
+    </div>
+
+    <div class="d-flex align-items-center mb-3">
+      <i class="bi bi-envelope text-primary me-2"></i>
+      <span>Email : {{ user.email }}</span>
+    </div>
+
+    <a href="{% url 'my_appointment' %}" class="btn btn-outline-secondary mb-3 w-100">My Appointment</a>
+    <a href="{% url 'edit_profile' %}" class="btn btn-primary w-100 mb-2">Edit Profile</a>
+    <a href="{% url 'login' %}" class="btn btn-outline-danger w-100">Logout</a>
+  </div>
+</div>
+
+<!-- ================= HERO SECTION ================= -->
+<section id="home" class="bg-primary text-white py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <h1 class="fw-bold">Welcome to Invision Hospital</h1>
+        <p class="lead">
+          Providing the best healthcare services with modern facilities.
+        </p>
+        <a href="{% url 'appointment' %}" class="btn btn-light btn-lg">
+          Book Appointment
+        </a>
+      </div>
+      <div class="col-md-6 text-center mt-4 mt-md-0">
+        <img src="{% static 'images/banner.jpg' %}" class="img-fluid rounded shadow" alt="Hospital" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES SECTION -->
+<section id="services" class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold">Our Services</h2>
+      <p class="text-muted">
+        We offer a wide range of healthcare services to meet your needs
+      </p>
+    </div>
+    <div class="row g-4">
+      {% for service in services %}
+      <div class="col-md-4">
+        <div class="card h-100 text-center shadow-sm">
+          <div class="card-body">
+            <i class="bi bi-heart-pulse-fill display-4 text-primary mb-3"></i>
+            <h5 class="card-title mb-4 fs-4">{{ service.service_name }}</h5>
+            <p class="card-text text-black-50">{{ service.service_description }}</p>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p>No services available.</p>
+      {% endfor %}
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT SECTION -->
+<section id="about" class="py-5 bg-light">
+  <div class="container">
+    <div class="row align-items-center">
+
+      <div class="col-md-6">
+        {% if about.about_image %}
+        <img src="{{ about.about_image.url }}" class="img-fluid rounded shadow" alt="About Hospital">
+        {% endif %}
+      </div>
+
+      <div class="col-md-6 mt-4 mt-md-0">
+        <h2 class="fw-bold">About Invision Hospital</h2>
+
+        <p>
+          {{ about.about_text }}
+        </p>
+
+        <a href="#contact" class="btn btn-primary mt-3">Contact Us</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- DOCTORS SECTION -->
+<section id="doctors" class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold">Meet Our Doctors</h2>
+      <p class="text-muted">Our team of expert doctors are here to care for you</p>
+    </div>
+
+    <div class="row g-4">
+      {% for doctor in about_doctors %}
+      <div class="col-sm-6 col-md-4">
+        <div class="card h-100 shadow-sm text-center">
+
+          {% if doctor.doctor_image %}
+          <img src="{{ doctor.doctor_image.url }}" class="card-img-top" style="height: 280px; object-fit: cover;"
+            alt="Doctor Image">
+          {% else %}
+          <img src="https://ui-avatars.com/api/?name=Dr+{{ doctor.name }}&background=0d6efd&color=fff"
+            class="card-img-top" style="height: 280px; object-fit: cover;" alt="Doctor Image">
+          {% endif %}
+
+          <div class="card-body">
+            <h5 class="card-title">Dr. {{ doctor.name }}</h5>
+            <p class="card-text text-muted">{{ doctor.specialization }}</p>
+
+            <p class="mb-1">
+              <i class="bi bi-telephone-fill text-primary"></i>
+              {{ doctor.phone }}
+            </p>
+
+            <p class="mb-0">
+              <i class="bi bi-envelope-fill text-primary"></i>
+              {{ doctor.email }}
+            </p>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="text-center text-muted">
+        No doctors available at the moment.
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- CONTACT / CTA SECTION -->
+<section id="contact" class="py-5 bg-primary text-white">
+  <div class="container text-center">
+    <h2 class="fw-bold">Book Your Appointment Today</h2>
+    <p class="mb-4">
+      Call us or fill out our online appointment form to get started.
+    </p>
+    <a href="tel:+1234567890" class="btn btn-light btn-lg me-2">Call Now</a>
+    <a href="#" class="btn btn-outline-light btn-lg">Book Online</a>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="bg-dark text-white text-center py-4">
+  &copy; 2026 Invision Hospital. All rights reserved.
+</footer>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const profileIcon = document.getElementById("profileIcon");
+    const profilePanel = document.getElementById("profilePanel");
+
+    profileIcon.addEventListener("click", function (e) {
+      e.stopPropagation();
+      profilePanel.classList.toggle("active");
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!profilePanel.contains(e.target) && !profileIcon.contains(e.target)) {
+        profilePanel.classList.remove("active");
+      }
+    });
+  });
+</script>
+
+{% endif %}
+{% endblock %}

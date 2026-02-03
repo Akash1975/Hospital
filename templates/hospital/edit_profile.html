@@ -1,0 +1,66 @@
+{% extends 'layout/main.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0 text-center">Edit Profile</h4>
+        </div>
+        <div class="card-body">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Editable User Info -->
+            <div class="mb-3">
+              <label for="id_username" class="form-label">Username</label>
+              <input type="text" name="username" class="form-control" id="id_username" value="{{ user.username }}">
+            </div>
+
+            <div class="mb-3">
+              <label for="id_email" class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" id="id_email" value="{{ user.email }}">
+            </div>
+
+            <!-- Other fields from user_form -->
+            {% for field in user_form %}
+            {% if field.name != 'username' and field.name != 'email' %}
+            <div class="mb-3">
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.help_text %}
+              <small class="form-text text-muted">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+              <div class="text-danger">{{ error }}</div>
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% endfor %}
+
+            <!-- Profile fields -->
+            {% for field in profile_form %}
+            <div class="mb-3">
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.help_text %}
+              <small class="form-text text-muted">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+              <div class="text-danger">{{ error }}</div>
+              {% endfor %}
+            </div>
+            {% endfor %}
+
+            <div class="d-grid mt-3">
+              <button type="submit" class="btn btn-success">Save Changes</button>
+              <button type="submit" class="btn btn-danger mt-2"><a href="{% url 'home' %}"></a>Back</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

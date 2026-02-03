@@ -1,0 +1,97 @@
+{% extends "layout/main.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- AUTH PAGE STYLES -->
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <!-- LEFT IMAGE SECTION -->
+        <div class="auth-left">
+            <!-- Top half: image -->
+            <img src="{% static 'images/Doctor.jpg' %}" alt="Doctor Image">
+
+            <!-- Bottom half: solid blue -->
+            <div class="bottom-blue"></div>
+
+            <!-- Text overlay -->
+            <div class="overlay">
+                <h5>Welcome to</h5>
+                <h3>Invision</h3>
+                <h5>Hospital Management System</h5>
+                <small>Best based healthcare management platform</small>
+            </div>
+        </div>
+
+
+        <!-- RIGHT FORM SECTION -->
+        <div class="auth-right">
+            <h3>Create Account</h3>
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    Please fix the errors below.
+                </div>
+                {% endif %}
+
+                <!-- Username -->
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" name="first_name" class="form-control" placeholder="Enter first_name"
+                        value="{{ form.first_name.value|default:'' }}" required>
+                    <small class="text-danger">{{ form.first_name.errors }}</small>
+
+                    <label>Last Name</label>
+                    <input type="text" name="last_name" class="form-control" placeholder="Enter last_name"
+                        value="{{ form.last_name.value|default:'' }}" required>
+                    <small class="text-danger">{{ form.last_name.errors }}</small>
+
+                    <label>Email:</label>
+                    <input type="text" name="email" class="form-control" placeholder="Enter email"
+                        value="{{ form.email.value|default:'' }}" required>
+                    <small class="text-danger">{{ form.email.errors }}</small>
+
+                    <label>Username</label>
+                    <input type="text" name="username" class="form-control" placeholder="Enter username"
+                        value="{{ form.username.value|default:'' }}" required>
+                    <small class="text-danger">{{ form.username.errors }}</small>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password1" class="form-control" placeholder="Enter password" required>
+                    <small class="text-danger">{{ form.password1.errors }}</small>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" name="password2" class="form-control" placeholder="Confirm password"
+                        required>
+                    <small class="text-danger">{{ form.password2.errors }}</small>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn btn-primary w-100 mt-3">
+                    Sign Up
+                </button>
+
+                <!-- Login Link -->
+                <p class="text-center mt-3">
+                    Already have an account?
+                    <a href="{% url 'login' %}">Login</a>
+                </p>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

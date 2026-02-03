@@ -1,0 +1,44 @@
+{% extends "layout/main.html" %}
+{% load static %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+<!-- PROFILE SECTION -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+
+            <!-- PROFILE CARD -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+
+                        <!-- Profile Image -->
+                        <img src="{% static 'images/user-avatar.png' %}" alt="Profile Picture"
+                            class="rounded-circle mb-3" width="120" height="120">
+
+                        <!-- User Info -->
+                        <h4 class="card-title">{{ user.first_name }} {{ user.last_name }}</h4>
+                        <p class="text-muted">{{ user.username }}</p>
+                        <p class="text-muted">{{ user.email }}</p>
+
+                        <button><a href="{% url 'home' %}" class="btn btn-outlin">Back </a></button>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+{% else %}
+<div class="container py-5 text-center">
+    <h3>You need to <a href="{% url 'login' %}">login</a> to view your profile.</h3>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "layout/main.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Messages at the top of the page -->
+{% if messages %}
+<div class="message-container-top position-fixed top-0 start-50 translate-middle-x w-100"
+    style="max-width: 500px; z-index: 1050;">
+    {% for message in messages %}
+    <div class="alert text-center animated-message {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}"
+        role="alert" style="margin-top: 10px;">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg p-4" style="max-width: 420px; width: 100%; border-radius: 12px;">
+
+        <h4 class="text-center mb-2">Verify OTP & Reset Password</h4>
+        <p class="text-center text-muted mb-4">
+            Enter the OTP sent to your email and set a new password
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <input type="text" name="otp" class="form-control" placeholder="Enter OTP" required>
+            </div>
+            <div class="mb-3">
+                <input type="password" name="password" class="form-control" placeholder="New Password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Reset Password</button>
+        </form>
+
+    </div>
+</div>
+
+<!-- Styles for animation -->
+<style>
+    .animated-message {
+        opacity: 0;
+        transform: translateY(-20px);
+        animation: fadeInDown 0.6s forwards;
+        animation-delay: 0.2s;
+    }
+
+    @keyframes fadeInDown {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .message-container-top .alert {
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-weight: 500;
+    }
+</style>
+
+<!-- Auto hide message after 5 seconds with fade out -->
+<script>
+    setTimeout(function () {
+        const messages = document.querySelectorAll(".animated-message");
+        messages.forEach(msg => {
+            msg.style.opacity = "0";
+            msg.style.transform = "translateY(-20px)";
+            setTimeout(() => msg.remove(), 500);
+        });
+    }, 5000); 
+</script>
+
+{% endblock %}
