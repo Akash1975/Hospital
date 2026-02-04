@@ -139,7 +139,7 @@ USE_I18N = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
@@ -199,3 +199,6 @@ JAZZMIN_SETTINGS = {
 #     DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
 SITE_ID = 1
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
