@@ -168,7 +168,7 @@ if DEBUG:
     DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
 
 else:
-    SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+    EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_API_KEY")
 
     DEFAULT_FROM_EMAIL = os.environ.get(
         "DEFAULT_FROM_EMAIL"
