@@ -165,19 +165,18 @@ if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
     DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
 else:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp.sendgrid.net"
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
+    DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "no-reply@hospital.com")
 
-    EMAIL_HOST_USER = "apikey"
+    SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+
+    EMAIL_SUBJECT_PREFIX = "[Hospital] "
+
     SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
 
     DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
 
 EMAIL_TIMEOUT = 10
 EMAIL_SUBJECT_PREFIX = "[Hospital] "
-
 
 
 JAZZMIN_SETTINGS = {
@@ -195,4 +194,3 @@ JAZZMIN_SETTINGS = {
 #     DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
 SITE_ID = 1
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
-
