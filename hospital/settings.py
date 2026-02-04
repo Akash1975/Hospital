@@ -168,9 +168,8 @@ EMAIL_PORT = 587
 
 EMAIL_HOST_USER = 'akashdhaigude1907@gmail.com'
 EMAIL_HOST_PASSWORD = 'krtxyzyhxeegdqda'  # 16-character app password
+DEFAULT_FROM_EMAIL = 'Hospital System <akashdhaigude1907@gmail.com>'
 
-# Default from email shown in inbox
-DEFAULT_FROM_EMAIL = 'Hospital System <no-reply@akashdhaigude1907.com>'
 
 
 

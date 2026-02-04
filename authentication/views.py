@@ -19,7 +19,7 @@ def send_email(subject, message, to_email):
         send_mail(
             subject,
             message,
-            settings.DEFAULT_FROM_EMAIL
+            settings.DEFAULT_FROM_EMAIL,  # use DEFAULT_FROM_EMAIL
             [to_email],
             fail_silently=False,
         )
