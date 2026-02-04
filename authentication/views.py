@@ -11,18 +11,24 @@ import random
 from django.core.mail import send_mail
 
 # ================= EMAIL FUNCTION =================
+from django.core.mail import EmailMessage
+from django.conf import settings
+
 def send_email(subject, message, to_email):
     """
-    Send an email using Gmail SMTP configured in settings.py
+    Sends an email via Gmail SMTP configured in settings.py.
+    Works for production servers like Render.
     """
     try:
-        send_mail(
-            subject,
-            message,
-            None,  # Uses DEFAULT_FROM_EMAIL from settings.py
-            [to_email],
-            fail_silently=False,
+        email = EmailMessage(
+            subject=subject,
+            body=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[to_email],
+            reply_to=[settings.DEFAULT_FROM_EMAIL],
         )
+        email.content_subtype = "plain"  # keep simple for Gmail
+        email.send(fail_silently=False)
         print(f"✅ Email sent to {to_email}")
     except Exception as e:
         print(f"❌ Failed to send email to {to_email}: {e}")

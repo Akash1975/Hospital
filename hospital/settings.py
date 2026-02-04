@@ -109,11 +109,12 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # ================= EMAIL SETTINGS =================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
+EMAIL_PORT = 465                # Use SSL port
+EMAIL_USE_TLS = False           # Disable TLS
+EMAIL_USE_SSL = True            # Enable SSL
 EMAIL_HOST_USER = 'akashdhaigude1907@gmail.com'
-EMAIL_HOST_PASSWORD = 'krtxyzyhxeegdqda'  # 16-character app password
-DEFAULT_FROM_EMAIL = 'Hospital System <no-reply@akashdhaigude1907.com>'
+EMAIL_HOST_PASSWORD = 'krtxyzyhxeegdqda'  # 16-character App Password
+DEFAULT_FROM_EMAIL = 'Hospital System <akashdhaigude1907@gmail.com>'
 
 # ================= JAZZMIN ADMIN =================
 JAZZMIN_SETTINGS = {
