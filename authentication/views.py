@@ -16,8 +16,10 @@ from sendgrid.helpers.mail import Mail
 
 def send_email(subject, message, to_email):
     try:
-        if not settings.SENDGRID_API_KEY:
-            print("SendGrid key missing")
+        api_key = settings.SENDGRID_API_KEY
+
+        if not api_key:
+            print("❌ SENDGRID_API_KEY missing")
             return
 
         email = Mail(
@@ -27,13 +29,13 @@ def send_email(subject, message, to_email):
             plain_text_content=message,
         )
 
-        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
-        sg.send(email)
+        sg = SendGridAPIClient(api_key)
+        response = sg.send(email)
+
+        print("✅ Email sent:", response.status_code)
 
     except Exception as e:
-        # NEVER crash production for email failure
-        print("SendGrid error:", e)
-
+        print("❌ SendGrid error:", e)
 
 
 
