@@ -170,7 +170,7 @@ EMAIL_HOST_USER = 'akashdhaigude1907@gmail.com'
 EMAIL_HOST_PASSWORD = 'krtxyzyhxeegdqda'  # 16-character app password
 
 # Default from email shown in inbox
-DEFAULT_FROM_EMAIL = 'Hospital System <no-reply@akashdhaigude1907.com>'
+DEFAULT_FROM_EMAIL ="akashdhaigude1907@gmail.com"
 
 
 

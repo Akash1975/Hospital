@@ -10,36 +10,26 @@ from .forms import RegisterForm
 from .models import PasswordResetOTP
 
 import random
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
-
-
-def send_email(subject, message, to_email):
-    try:
-        api_key = settings.SENDGRID_API_KEY
-
-        if not api_key:
-            print("❌ SENDGRID_API_KEY missing")
-            return
-
-        email = Mail(
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to_emails=to_email,
-            subject=subject,
-            plain_text_content=message,
-        )
-
-        sg = SendGridAPIClient(api_key)
-        response = sg.send(email)
-
-        print("✅ Email sent:", response.status_code)
-
-    except Exception as e:
-        print("❌ SendGrid error:", e)
-
-
 
 # ================= AUTH VIEWS =================
+from django.core.mail import send_mail
+
+# ================= EMAIL FUNCTION =================
+def send_email(subject, message, to_email):
+    """
+    Send an email using Gmail SMTP configured in settings.py
+    """
+    try:
+        send_mail(
+            subject,
+            message,
+            None,  # uses DEFAULT_FROM_EMAIL from settings.py
+            [to_email],
+            fail_silently=False,
+        )
+        print(f"✅ Email sent to {to_email}")
+    except Exception as e:
+        print(f"❌ Failed to send email to {to_email}: {e}")
 
 
 def register_view(request):
