@@ -17,9 +17,10 @@ from sendgrid.helpers.mail import Mail
 
 
 def send_email(subject, message, to_email):
-    """
-    Send email using SendGrid API (Render-safe)
-    """
+    if not settings.SENDGRID_API_KEY:
+        print("SendGrid key missing")
+        return
+
     email = Mail(
         from_email=settings.DEFAULT_FROM_EMAIL,
         to_emails=to_email,
@@ -29,6 +30,7 @@ def send_email(subject, message, to_email):
 
     sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
     sg.send(email)
+
 
 
 # ================= AUTH VIEWS =================
