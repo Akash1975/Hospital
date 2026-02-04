@@ -163,19 +163,21 @@ import os
 
 # ================= EMAIL CONFIG =================
 
-if DEBUG:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-    DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
+# ================= EMAIL CONFIG (SENDGRID API) =================
 
-else:
-    EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_API_KEY")
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
 
-    DEFAULT_FROM_EMAIL = os.environ.get(
-        "DEFAULT_FROM_EMAIL"
-    )
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL",
+    "akashdhaigude1907@gmail.com"
+)
+
+# Dummy backend because we send mail via SendGrid API manually
+EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
 
 EMAIL_TIMEOUT = 10
 EMAIL_SUBJECT_PREFIX = "[Hospital] "
+
 
 
 JAZZMIN_SETTINGS = {
