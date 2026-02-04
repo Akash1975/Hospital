@@ -9,10 +9,10 @@ from django.core.mail import send_mail
 from .models import PasswordResetOTP
 import random
 from django.utils import timezone
+
 # from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth.models import User
-
 
 
 # Create your views here.
@@ -33,7 +33,6 @@ def register_view(request):
         form = RegisterForm()
 
     return render(request, "auth/register.html", {"form": form})
-
 
 
 def login_view(request):
@@ -144,4 +143,3 @@ Hospital Management System
         return redirect("login")
 
     return render(request, "auth/verify_otp.html")
-

@@ -24,14 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-i!y^_u(7%7s64tl0umdyaaoy!a-34+h+k#+md$#%p77tg%-e&3"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG =False
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    ".onrender.com",  # <-- your actual Render domain
-]
-    
+
+ALLOWED_HOSTS = os.environ.get(
+    "ALLOWED_HOSTS", "localhost,127.0.0.1,.onrender.com"
+).split(",")
 
 
 # Application definition
@@ -47,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "hp_management",
     "authentication",
+    "django.contrib.sites",
 ]
 
 MIDDLEWARE = [
@@ -84,16 +83,28 @@ WSGI_APPLICATION = "hospital.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-TIME_ZONE = "Asia/Kolkata"
-
 
 import dj_database_url
 
-DATABASES = {
-    "default": dj_database_url.parse(
-        "postgresql://neondb_owner:npg_9rvMTS3OEyac@ep-little-boat-a1hzxceg-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-    )
-}
+import dj_database_url
+
+if os.environ.get("DATABASE_URL"):
+    # Production (Render / Postgres)
+    DATABASES = {
+        "default": dj_database_url.config(
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }
+else:
+    # Local development (SQLite)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+
 
 
 # Password validation
@@ -120,11 +131,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
-
-USE_I18N = True
-
+TIME_ZONE = "Asia/Kolkata"
 USE_TZ = True
+USE_I18N = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -147,31 +156,21 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # EMAIL_USE_TLS = True
 # EMAIL_HOST_USER = "akashdhaigude1907@gmail.com"
 # EMAIL_HOST_PASSWORD = "krtxyzyhxeegdqda"
-# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# DEFAULT_FROM_EMAIL = 'akashdhaigude1907@gmail.com'
 
 import os
 
 # ================= EMAIL (PRODUCTION - SENDGRID) =================
 
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_HOST = "smtp.sendgrid.net"
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
-# EMAIL_HOST_USER = "apikey"
-# EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_API_KEY")
+EMAIL_HOST_USER = "apikey"
+EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_API_KEY")
 
-# DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
-
-
-if not DEBUG:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp.sendgrid.net"
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = "apikey"
-    EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_API_KEY")
-    DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "no-reply@yourdomain.com")
 
 
 JAZZMIN_SETTINGS = {
@@ -187,3 +186,4 @@ JAZZMIN_SETTINGS = {
 # if DEBUG:
 #     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 #     DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
+SITE_ID = 1
