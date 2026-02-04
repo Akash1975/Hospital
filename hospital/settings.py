@@ -192,4 +192,3 @@ SITE_ID = 1
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
