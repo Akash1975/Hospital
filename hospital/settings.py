@@ -161,19 +161,24 @@ import os
 
 # ================= EMAIL (PRODUCTION - SENDGRID) =================
 
+# ================= EMAIL CONFIG =================
+
 if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
     DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
+
 else:
-    DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "no-reply@hospital.com")
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.sendgrid.net"
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
 
-    SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+    EMAIL_HOST_USER = "apikey"
+    EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_API_KEY")
 
-    EMAIL_SUBJECT_PREFIX = "[Hospital] "
-
-    SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
-
-    DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
+    DEFAULT_FROM_EMAIL = os.environ.get(
+        "DEFAULT_FROM_EMAIL", "no-reply@hospital.com"
+    )
 
 EMAIL_TIMEOUT = 10
 EMAIL_SUBJECT_PREFIX = "[Hospital] "
