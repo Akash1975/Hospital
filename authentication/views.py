@@ -5,21 +5,21 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.conf import settings
-
 from .forms import RegisterForm
 from .models import PasswordResetOTP
-
 import random
-
-# ================= AUTH VIEWS =================
 from django.core.mail import send_mail
 
+# ================= EMAIL FUNCTION =================
 def send_email(subject, message, to_email):
+    """
+    Send an email using Gmail SMTP configured in settings.py
+    """
     try:
         send_mail(
             subject,
             message,
-            settings.DEFAULT_FROM_EMAIL,  # use DEFAULT_FROM_EMAIL
+            None,  # Uses DEFAULT_FROM_EMAIL from settings.py
             [to_email],
             fail_silently=False,
         )
@@ -28,7 +28,7 @@ def send_email(subject, message, to_email):
         print(f"❌ Failed to send email to {to_email}: {e}")
 
 
-
+# ================= REGISTER VIEW =================
 def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -38,15 +38,14 @@ def register_view(request):
             user.last_name = form.cleaned_data["last_name"]
             user.email = form.cleaned_data["email"]
             user.save()
-
             login(request, user)
             return redirect("home")
     else:
         form = RegisterForm()
-
     return render(request, "auth/register.html", {"form": form})
 
 
+# ================= LOGIN VIEW =================
 def login_view(request):
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
@@ -56,18 +55,16 @@ def login_view(request):
             return redirect("home")
     else:
         form = AuthenticationForm()
-
     return render(request, "auth/login.html", {"form": form})
 
 
+# ================= LOGOUT VIEW =================
 def logout_view(request):
     logout(request)
     return redirect("login")
 
 
 # ================= FORGOT PASSWORD =================
-
-
 def forgot_password(request):
     if request.method == "POST":
         email = request.POST.get("email")
@@ -83,10 +80,11 @@ def forgot_password(request):
 
         # Save OTP
         PasswordResetOTP.objects.update_or_create(
-            user=user, defaults={"otp": otp, "created_at": timezone.now()}
+            user=user,
+            defaults={"otp": otp, "created_at": timezone.now()}
         )
 
-        # Send OTP email (SendGrid)
+        # Send OTP email
         send_email(
             "Your OTP for Password Reset",
             f"""Hello {user.username},
@@ -103,28 +101,24 @@ Hospital Management System
 
         # Save user id in session
         request.session["reset_user_id"] = user.id
-
         messages.success(request, "OTP has been sent to your email.")
         return redirect("verify_otp")
 
     return render(request, "auth/forgot_password.html")
 
 
-# ================= VERIFY OTP =================
-
-
+# ================= VERIFY OTP & RESET PASSWORD =================
 def verify_otp(request):
     if request.method == "POST":
         otp = request.POST.get("otp")
         password = request.POST.get("password")
-
         user_id = request.session.get("reset_user_id")
+
         if not user_id:
             messages.error(request, "Session expired. Try again.")
             return redirect("forgot_password")
 
         user = User.objects.get(id=user_id)
-
         otp_obj = PasswordResetOTP.objects.filter(user=user, otp=otp).first()
 
         if not otp_obj:
@@ -146,8 +140,7 @@ def verify_otp(request):
             "Password Changed Successfully",
             f"""Hello {user.first_name or user.username},
 
-Your password has been changed successfully.
-
+Your password has been changed successfully. 
 If you did not perform this action, please contact support immediately.
 
 Regards,
@@ -158,7 +151,6 @@ Hospital Management System
 
         # Clear session
         del request.session["reset_user_id"]
-
         messages.success(request, "Password reset successful. Please login.")
         return redirect("login")
 
