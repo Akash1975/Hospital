@@ -171,7 +171,7 @@ else:
     SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
 
     DEFAULT_FROM_EMAIL = os.environ.get(
-        "DEFAULT_FROM_EMAIL", "no-reply@hospital.com"
+        "DEFAULT_FROM_EMAIL"
     )
 
 EMAIL_TIMEOUT = 10
