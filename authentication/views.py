@@ -14,22 +14,19 @@ import random
 # ================= AUTH VIEWS =================
 from django.core.mail import send_mail
 
-# ================= EMAIL FUNCTION =================
 def send_email(subject, message, to_email):
-    """
-    Send an email using Gmail SMTP configured in settings.py
-    """
     try:
         send_mail(
             subject,
             message,
-            None,  # uses DEFAULT_FROM_EMAIL from settings.py
+            settings.DEFAULT_FROM_EMAIL
             [to_email],
             fail_silently=False,
         )
         print(f"✅ Email sent to {to_email}")
     except Exception as e:
         print(f"❌ Failed to send email to {to_email}: {e}")
+
 
 
 def register_view(request):
