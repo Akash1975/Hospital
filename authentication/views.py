@@ -1,32 +1,49 @@
-from django.shortcuts import render
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
-from .forms import RegisterForm
 from django.contrib import messages
-from django.core.mail import send_mail
-from .models import PasswordResetOTP
-import random
-from django.utils import timezone
-
-# from datetime import timedelta
-from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils import timezone
+from django.conf import settings
+
+from .forms import RegisterForm
+from .models import PasswordResetOTP
+
+import random
+
+# ================= SENDGRID EMAIL =================
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 
-# Create your views here.
+def send_email(subject, message, to_email):
+    """
+    Send email using SendGrid API (Render-safe)
+    """
+    email = Mail(
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to_emails=to_email,
+        subject=subject,
+        plain_text_content=message,
+    )
+
+    sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+    sg.send(email)
+
+
+# ================= AUTH VIEWS =================
+
+
 def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-
             user.first_name = form.cleaned_data["first_name"]
             user.last_name = form.cleaned_data["last_name"]
             user.email = form.cleaned_data["email"]
-
             user.save()
+
             login(request, user)
             return redirect("home")
     else:
@@ -42,53 +59,63 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             return redirect("home")
-
     else:
-        initial_data = {"username": "", "password": ""}
-        form = AuthenticationForm(initial=initial_data)
+        form = AuthenticationForm()
 
     return render(request, "auth/login.html", {"form": form})
 
 
 def logout_view(request):
     logout(request)
-    return render(request, "auth/login.html")
+    return redirect("login")
+
+
+# ================= FORGOT PASSWORD =================
 
 
 def forgot_password(request):
     if request.method == "POST":
         email = request.POST.get("email")
+
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             messages.error(request, "Email not registered.")
             return redirect("forgot_password")
 
-        # Generate a 6-digit OTP
+        # Generate OTP
         otp = random.randint(100000, 999999)
 
-        # Save or update OTP in DB
-        otp_obj, created = PasswordResetOTP.objects.update_or_create(
+        # Save OTP
+        PasswordResetOTP.objects.update_or_create(
             user=user, defaults={"otp": otp, "created_at": timezone.now()}
         )
 
-        # Send OTP via email
-        send_mail(
+        # Send OTP email (SendGrid)
+        send_email(
             "Your OTP for Password Reset",
-            f"Hello user {user.username},\n\nYour OTP is: {otp}\nIt will expire in 10 minutes.",
-            settings.DEFAULT_FROM_EMAIL,
-            [email],
-            fail_silently=False,
+            f"""Hello {user.username},
+
+Your OTP for password reset is: {otp}
+
+This OTP will expire in 10 minutes.
+
+Regards,
+Hospital Management System
+""",
+            user.email,
         )
 
-        # Store user id in session for verify_otp view
+        # Save user id in session
         request.session["reset_user_id"] = user.id
 
-        # Show success message
-        messages.success(request, f"OTP has been sent to {email}.")
+        messages.success(request, "OTP has been sent to your email.")
         return redirect("verify_otp")
 
     return render(request, "auth/forgot_password.html")
+
+
+# ================= VERIFY OTP =================
 
 
 def verify_otp(request):
@@ -106,21 +133,21 @@ def verify_otp(request):
         otp_obj = PasswordResetOTP.objects.filter(user=user, otp=otp).first()
 
         if not otp_obj:
-            messages.error(request, "Invalid OTP")
+            messages.error(request, "Invalid OTP.")
             return redirect("verify_otp")
 
         if otp_obj.is_expired():
             otp_obj.delete()
-            messages.error(request, "OTP expired")
+            messages.error(request, "OTP expired.")
             return redirect("forgot_password")
 
-        # ✅ Update password
+        # Set new password
         user.set_password(password)
         user.save()
         otp_obj.delete()
 
-        # ✅ Send success email
-        send_mail(
+        # Send success email
+        send_email(
             "Password Changed Successfully",
             f"""Hello {user.first_name or user.username},
 
@@ -131,9 +158,7 @@ If you did not perform this action, please contact support immediately.
 Regards,
 Hospital Management System
 """,
-            settings.DEFAULT_FROM_EMAIL,
-            [user.email],
-            fail_silently=False,
+            user.email,
         )
 
         # Clear session
