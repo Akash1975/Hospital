@@ -77,10 +77,16 @@ def forgot_password(request):
 
                 PasswordResetOTP.objects.create(user=user, otp=otp)
 
-                send_otp_email(email, otp)
-
-                request.session["reset_user"] = user.id
-                return redirect("verify_otp_reset")
+                # Add better error handling
+                try:
+                    send_otp_email(email, otp)
+                    request.session["reset_user"] = user.id
+                    messages.success(request, "OTP sent to your email")
+                    return redirect("verify_otp_reset")
+                except Exception as e:
+                    messages.error(request, f"Failed to send email: {str(e)}")
+                    # Log the error for debugging
+                    print(f"Email sending failed: {e}")
 
             except User.DoesNotExist:
                 messages.error(request, "Email not registered")
@@ -108,11 +114,11 @@ def verify_otp_and_reset(request):
 
         if not otp_obj or otp_obj.is_expired():
             messages.error(request, "Invalid or expired OTP")
-            return redirect("verify_otp")
+            return redirect("verify_otp_reset")
 
         if new_pass != confirm_pass:
             messages.error(request, "Passwords do not match")
-            return redirect("verify_otp")
+            return redirect("verify_otp_reset")
 
         user = User.objects.get(id=user_id)
         user.set_password(new_pass)
@@ -128,27 +134,39 @@ def verify_otp_and_reset(request):
 
 
 def send_otp_email(user_email, otp):
+    import logging
+    logger = logging.getLogger(__name__)
+
+    if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
+        logger.error("EMAIL_HOST_USER or EMAIL_HOST_PASSWORD not configured")
+        raise ValueError("Email credentials not configured.")
 
     subject = "Hospital Password Reset OTP"
 
     message = f"""
-    Hello,
+Hello,
 
-    Your OTP for password reset is:
+Your OTP for password reset is:
 
-    {otp}
+{otp}
 
-    This OTP is valid for 5 minutes.
+This OTP is valid for 10 minutes.
 
-    If you did not request this, please ignore.
+If you did not request this, please ignore.
 
-    Hospital Management System
-    """
+Hospital Management System
+"""
 
-    send_mail(
-        subject,
-        message,
-        settings.EMAIL_HOST_USER,
-        [user_email],
-        fail_silently=False,
-    )
+    try:
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [user_email],
+            fail_silently=False,
+        )
+        logger.info(f"OTP email sent successfully to {user_email}")
+
+    except Exception as e:
+        logger.error(f"Failed to send OTP email: {str(e)}")
+        raise
