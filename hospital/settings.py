@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,12 +28,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-i!y^_u(7%7s64tl0umdyaaoy!a-34+h+k#+md$#%p77tg%-e&3"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-
-ALLOWED_HOSTS = os.environ.get(
-    "ALLOWED_HOSTS", "localhost,127.0.0.1,.onrender.com"
-).split(",")
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com",  # <-- your actual Render domain
+]
+    
 
 
 # Application definition
@@ -45,7 +51,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "hp_management",
     "authentication",
-    "django.contrib.sites",
 ]
 
 MIDDLEWARE = [
@@ -83,27 +88,16 @@ WSGI_APPLICATION = "hospital.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+TIME_ZONE = "Asia/Kolkata"
+
 
 import dj_database_url
 
-import dj_database_url
-
-if os.environ.get("DATABASE_URL"):
-    # Production (Render / Postgres)
-    DATABASES = {
-        "default": dj_database_url.config(
-            conn_max_age=600,
-            ssl_require=True,
-        )
-    }
-else:
-    # Local development (SQLite)
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+DATABASES = {
+    "default": dj_database_url.parse(
+        "postgresql://neondb_owner:npg_9rvMTS3OEyac@ep-little-boat-a1hzxceg-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+    )
+}
 
 
 # Password validation
@@ -130,16 +124,18 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "Asia/Kolkata"
-USE_TZ = True
+TIME_ZONE = "UTC"
+
 USE_I18N = True
+
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 
-STATIC_URL = "/static/"
+STATIC_URL = "static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
@@ -149,37 +145,34 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_HOST = "smtp.gmail.com"
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = "akashdhaigude1907@gmail.com"
-# EMAIL_HOST_PASSWORD = "krtxyzyhxeegdqda"
-# DEFAULT_FROM_EMAIL = 'akashdhaigude1907@gmail.com'
-
 import os
 
-# ================= EMAIL (PRODUCTION - SENDGRID) =================
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_USE_TLS = True
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = 'akashdhaigude1907@gmail.com'
-# EMAIL_HOST_PASSWORD = 'cslwjjrdwnattyuu'
-# DEFAULT_FROM_EMAIL = 'Hospital System <no-reply@akashdhaigude1907.com>'
+# ================= EMAIL CONFIGURATION =================
+# Check if we're running on Render or in production
+IS_ON_RENDER = 'RENDER_EXTERNAL_URL' in os.environ or 'RENDER' in os.environ
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-
-# ================= EMAIL SETTINGS =================
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_USE_TLS = True           # TLS on port 587
-EMAIL_PORT = 587
-
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")       # Your Gmail address
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")  # 16-char App Password
-
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # Must match EMAIL_HOST_USER
-
+if IS_ON_RENDER:
+    # Production settings for Render deployment using Gmail
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.gmail.com"
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    
+    # Use environment variables for Gmail credentials
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "akashdhaigude1907@gmail.com")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+    
+    DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER", "akashdhaigude1907@gmail.com")
+else:
+    # Local development settings - using Gmail SMTP
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.gmail.com"
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "akashdhaigude1907@gmail.com")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+    DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER", "akashdhaigude1907@gmail.com")
 
 
 JAZZMIN_SETTINGS = {
@@ -195,7 +188,3 @@ JAZZMIN_SETTINGS = {
 # if DEBUG:
 #     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 #     DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
-SITE_ID = 1
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
