@@ -82,8 +82,18 @@ def send_otp(request):
                     messages.error(request, "Email not registered.")
                     return redirect("forgot_password")
                 # For other purposes, we might not require user to exist
+            except Exception as e:
+                # Handle any other potential errors during user lookup
+                messages.error(request, "An error occurred. Please try again.")
+                print(f"Error finding user: {str(e)}")
+                return redirect("home")
         
-        otp_sent, otp = send_general_otp(request, email, purpose, user)
+        try:
+            otp_sent, otp = send_general_otp(request, email, purpose, user)
+        except Exception as e:
+            print(f"Error generating or sending OTP: {str(e)}")
+            messages.error(request, "An error occurred while processing your request. Please try again.")
+            return redirect("home")
         
         if otp_sent:
             messages.success(request, f"OTP has been sent to {email}.")
@@ -93,7 +103,7 @@ def send_otp(request):
                 request.session["reset_user_id"] = user.id
                 return redirect("verify_otp")
         else:
-            messages.error(request, "Failed to send OTP. Please try again.")
+            messages.error(request, "Failed to send OTP. Please contact support or try again later.")
     
     # Redirect back to appropriate page based on purpose
     if request.META.get('HTTP_REFERER'):
@@ -110,14 +120,24 @@ def forgot_password(request):
         except User.DoesNotExist:
             messages.error(request, "Email not registered.")
             return redirect("forgot_password")
+        except Exception as e:
+            # Handle any other potential errors during user lookup
+            messages.error(request, "An error occurred. Please try again.")
+            print(f"Error finding user: {str(e)}")
+            return redirect("forgot_password")
 
         # Generate a 6-digit OTP
         otp = random.randint(100000, 999999)
 
         # Save or update OTP in DB
-        otp_obj, created = PasswordResetOTP.objects.update_or_create(
-            user=user, defaults={"otp": otp, "created_at": timezone.now()}
-        )
+        try:
+            otp_obj, created = PasswordResetOTP.objects.update_or_create(
+                user=user, defaults={"otp": otp, "created_at": timezone.now()}
+            )
+        except Exception as e:
+            print(f"Error saving OTP: {str(e)}")
+            messages.error(request, "An error occurred while processing your request. Please try again.")
+            return redirect("forgot_password")
 
         # Send OTP via email
         otp_message = f"Hello {user.first_name or user.username},\n\nYour OTP is: {otp}\nIt will expire in 10 minutes."
@@ -131,7 +151,7 @@ def forgot_password(request):
         )
         
         if not otp_sent:
-            messages.error(request, "Failed to send OTP. Please try again.")
+            messages.error(request, "Failed to send OTP. Please contact support or try again later.")
             return redirect("forgot_password")
 
         # Store user id in session for verify_otp view
@@ -155,6 +175,11 @@ def send_otp_email(user, email, otp, subject="Your OTP for Verification", messag
             print("Email settings are not configured properly")
             return False
             
+        # Ensure required email settings are available
+        if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
+            print("Email credentials are not configured properly")
+            return False
+            
         send_mail(
             subject,
             message_body,
@@ -174,39 +199,44 @@ def send_general_otp(request, email, purpose="verification", user=None):
     General function to send OTP for different purposes
     Purpose can be 'verification', 'password_reset', 'account_activation', etc.
     """
-    # Generate a 6-digit OTP
-    otp = random.randint(100000, 999999)
-    
-    if purpose == "password_reset" and user:
-        # Handle password reset OTP
-        otp_obj, created = PasswordResetOTP.objects.update_or_create(
-            user=user, defaults={"otp": str(otp), "created_at": timezone.now()}
+    try:
+        # Generate a 6-digit OTP
+        otp = random.randint(100000, 999999)
+        
+        if purpose == "password_reset" and user:
+            # Handle password reset OTP
+            otp_obj, created = PasswordResetOTP.objects.update_or_create(
+                user=user, defaults={"otp": str(otp), "created_at": timezone.now()}
+            )
+            subject = "Your OTP for Password Reset"
+            message_body = f"Hello {user.username},\n\nYour OTP for password reset is: {otp}\nIt will expire in 10 minutes."
+        elif purpose == "verification" and user:
+            # For account verification
+            subject = "Your Account Verification OTP"
+            message_body = f"Hello {user.first_name or user.username},\n\nYour account verification OTP is: {otp}\nIt will expire in 10 minutes."
+        elif purpose == "account_activation" and user:
+            # For account activation
+            subject = "Your Account Activation OTP"
+            message_body = f"Hello {user.first_name or user.username},\n\nYour account activation OTP is: {otp}\nIt will expire in 10 minutes."
+        else:
+            # Generic OTP
+            subject = "Your OTP for Verification"
+            message_body = f"Hello,\n\nYour OTP is: {otp}\nIt will expire in 10 minutes."
+        
+        # Send OTP
+        otp_sent = send_otp_email(
+            user=user,
+            email=email,
+            otp=otp,
+            subject=subject,
+            message_body=message_body
         )
-        subject = "Your OTP for Password Reset"
-        message_body = f"Hello {user.username},\n\nYour OTP for password reset is: {otp}\nIt will expire in 10 minutes."
-    elif purpose == "verification" and user:
-        # For account verification
-        subject = "Your Account Verification OTP"
-        message_body = f"Hello {user.first_name or user.username},\n\nYour account verification OTP is: {otp}\nIt will expire in 10 minutes."
-    elif purpose == "account_activation" and user:
-        # For account activation
-        subject = "Your Account Activation OTP"
-        message_body = f"Hello {user.first_name or user.username},\n\nYour account activation OTP is: {otp}\nIt will expire in 10 minutes."
-    else:
-        # Generic OTP
-        subject = "Your OTP for Verification"
-        message_body = f"Hello,\n\nYour OTP is: {otp}\nIt will expire in 10 minutes."
-    
-    # Send OTP
-    otp_sent = send_otp_email(
-        user=user,
-        email=email,
-        otp=otp,
-        subject=subject,
-        message_body=message_body
-    )
-    
-    return otp_sent, otp
+        
+        return otp_sent, otp
+    except Exception as e:
+        print(f"Error in send_general_otp: {str(e)}")
+        logging.error(f"Error in send_general_otp: {str(e)}")
+        return False, None
 
 def verify_otp(request):
     if request.method == "POST":
@@ -218,31 +248,53 @@ def verify_otp(request):
             messages.error(request, "Session expired. Try again.")
             return redirect("forgot_password")
 
-        user = User.objects.get(id=user_id)
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            messages.error(request, "User not found. Please try again.")
+            return redirect("forgot_password")
+        except Exception as e:
+            messages.error(request, "An error occurred. Please try again.")
+            print(f"Error retrieving user: {str(e)}")
+            return redirect("forgot_password")
 
-        otp_obj = PasswordResetOTP.objects.filter(user=user, otp=otp).first()
+        try:
+            otp_obj = PasswordResetOTP.objects.filter(user=user, otp=otp).first()
+        except Exception as e:
+            messages.error(request, "An error occurred while verifying OTP. Please try again.")
+            print(f"Error retrieving OTP: {str(e)}")
+            return redirect("forgot_password")
 
         if not otp_obj:
             messages.error(request, "Invalid OTP")
             return redirect("verify_otp")
 
         if otp_obj.is_expired():
-            otp_obj.delete()
+            try:
+                otp_obj.delete()
+            except Exception as e:
+                print(f"Error deleting expired OTP: {str(e)}")
             messages.error(request, "OTP expired")
             return redirect("forgot_password")
 
-        # ✅ Update password
-        user.set_password(password)
-        user.save()
-        otp_obj.delete()
+        try:
+            # ✅ Update password
+            user.set_password(password)
+            user.save()
+            otp_obj.delete()
+        except Exception as e:
+            messages.error(request, "An error occurred while resetting your password. Please try again.")
+            print(f"Error updating password: {str(e)}")
+            return redirect("forgot_password")
 
-        # ✅ Send success email
-        send_otp_email(
-            user=user,
-            email=user.email,
-            otp="",
-            subject="Password Changed Successfully",
-            message_body=f"""Hello {user.first_name or user.username},
+        # ✅ Send success email (don't fail if email doesn't send)
+        try:
+            send_otp_email(
+                user=user,
+                email=user.email,
+                otp="",
+                subject="Password Changed Successfully",
+                message_body=f"""Hello {user.first_name or user.username},
 
 Your password has been changed successfully.
 
@@ -251,10 +303,16 @@ If you did not perform this action, please contact support immediately.
 Regards,
 Hospital Management System
 """,
-        )
+            )
+        except Exception as e:
+            # Don't fail the password reset if email sending fails
+            print(f"Error sending success email: {str(e)}")
 
         # Clear session
-        del request.session["reset_user_id"]
+        try:
+            del request.session["reset_user_id"]
+        except KeyError:
+            pass  # Session key doesn't exist, which is fine
 
         messages.success(request, "Password reset successful. Please login.")
         return redirect("login")

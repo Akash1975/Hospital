@@ -168,6 +168,11 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 
+# Print email configuration for debugging (only in development)
+if DEBUG:
+    print(f"Email configuration: Host={EMAIL_HOST}, Port={EMAIL_PORT}, TLS={EMAIL_USE_TLS}, SSL={EMAIL_USE_SSL}")
+    print(f"Email user: {EMAIL_HOST_USER}")
+
 
 JAZZMIN_SETTINGS = {
     "site_title": "Hospital Admin",
