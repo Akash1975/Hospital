@@ -1,14 +1,1 @@
-.env
-__pycache__
-*.pyc
-*.log
-*.sqlite3
-.DS_Store
-node_modules/
-*.swp
-*.swo
-media/
-staticfiles/
-venv/
-.env
-config.env
+/env

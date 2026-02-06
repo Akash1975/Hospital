@@ -10,3 +10,16 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'username', 'password1', 'password2']
+
+
+class ForgotPasswordForm(forms.Form):
+    email = forms.EmailField()
+
+
+class OTPVerificationForm(forms.Form):
+    otp = forms.CharField(max_length=6)
+
+
+class ResetPasswordForm(forms.Form):
+    new_password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)

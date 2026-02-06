@@ -1,0 +1,91 @@
+{% extends "layout/main.html" %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
+<style>
+    .top-message {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        width: 90%;
+        max-width: 500px;
+        text-align: center;
+    }
+</style>
+
+<!-- MESSAGE -->
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} top-message" id="autoHideMsg">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <!-- LEFT IMAGE -->
+        <div class="auth-left">
+            <img src="{% static 'images/Doctor.jpg' %}" alt="Doctor">
+            <div class="bottom-blue"></div>
+
+            <div class="overlay">
+                <h5>OTP Verification</h5>
+                <h3>Invision</h3>
+                <small>Reset your password securely</small>
+            </div>
+        </div>
+
+        <!-- RIGHT FORM -->
+        <div class="auth-right">
+            <h3>Verify OTP</h3>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- OTP -->
+                <div class="form-group">
+                    <label>Enter OTP</label>
+                    <input type="text" name="otp" class="form-control" placeholder="Enter OTP" required>
+                </div>
+
+                <!-- New Password -->
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" name="new_password" class="form-control" placeholder="Enter new password"
+                        required>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" name="confirm_password" class="form-control" placeholder="Confirm password"
+                        required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mt-3">
+                    Reset Password
+                </button>
+
+                <p class="text-center mt-3 fs-6">
+                    Back to <a href="{% url 'login' %}" class="fs-6">Login</a>
+                </p>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    setTimeout(function () {
+        const msg = document.getElementById("autoHideMsg");
+        if (msg) { msg.style.display = "none"; }
+    }, 5000);
+</script>
+
+{% endblock %}

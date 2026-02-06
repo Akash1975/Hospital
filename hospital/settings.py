@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,9 +28,9 @@ SECRET_KEY = "django-insecure-%p4n^&6)h^g-%&7c4s)iqz4(q-cec(vdebwyh%9lj5^6a!8@pj
 DEBUG = True
 
 ALLOWED_HOSTS = [
-        "localhost",
-        "127.0.0.1",
-        "onrender.com",
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com",
 ]
 
 
@@ -83,8 +84,8 @@ WSGI_APPLICATION = "hospital.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": os.environ.get("DATABASE_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("DATABASE_NAME", os.path.join(BASE_DIR, "db.sqlite3")),
     }
 }
 
@@ -113,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
 
@@ -125,7 +126,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 MEDIA_URL = "/media/"
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -136,7 +137,7 @@ MEDIA_URL = "/media/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 JAZZMIN_SETTINGS = {
-    "favicon" : "images/shop.jpg",
+    "favicon": "images/shop.jpg",
     "site_title": "Shop Admin",
     "site_brand": "Shop Admin",
     "welcome_sign": "Welcome to Shop Admin Panel",
@@ -144,3 +145,14 @@ JAZZMIN_SETTINGS = {
     "navigation_expanded": True,
     "custom_css": "css/jazzmin_custom.css",
 }
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
