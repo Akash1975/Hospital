@@ -62,10 +62,14 @@ def send_otp(request):
     General endpoint to send OTP for various purposes
     Expects POST request with 'email' and 'purpose' parameters
     """
+    print(f"Send OTP request - Method: {request.method}, POST data: {request.POST}")
+    
     if request.method == "POST":
         email = request.POST.get("email")
         purpose = request.POST.get("purpose", "verification")
         user_email = request.POST.get("user_email")  # Email of the user making the request (for security)
+        
+        print(f"Send OTP - Email: {email}, Purpose: {purpose}")
         
         if not email:
             messages.error(request, "Email is required.")
@@ -77,6 +81,7 @@ def send_otp(request):
         if purpose in ['password_reset', 'verification', 'account_activation']:
             try:
                 user = User.objects.get(email=email)
+                print(f"Found user for {purpose}: {user}")
             except User.DoesNotExist:
                 if purpose == "password_reset":
                     messages.error(request, "Email not registered.")
@@ -90,6 +95,7 @@ def send_otp(request):
         
         try:
             otp_sent, otp = send_general_otp(request, email, purpose, user)
+            print(f"General OTP result - Sent: {otp_sent}, OTP: {otp}")
         except Exception as e:
             print(f"Error generating or sending OTP: {str(e)}")
             messages.error(request, "An error occurred while processing your request. Please try again.")
@@ -114,9 +120,20 @@ def send_otp(request):
 
 def forgot_password(request):
     if request.method == "POST":
+        # Debug: Print request information
+        print(f"Request POST data: {request.POST}")
+        print(f"Request method: {request.method}")
+        
         email = request.POST.get("email")
+        print(f"Email received: {email}")
+        
+        if not email:
+            messages.error(request, "Email is required.")
+            return redirect("forgot_password")
+            
         try:
             user = User.objects.get(email=email)
+            print(f"Found user: {user}")
         except User.DoesNotExist:
             messages.error(request, "Email not registered.")
             return redirect("forgot_password")
@@ -128,12 +145,14 @@ def forgot_password(request):
 
         # Generate a 6-digit OTP
         otp = random.randint(100000, 999999)
+        print(f"Generated OTP: {otp}")
 
         # Save or update OTP in DB
         try:
             otp_obj, created = PasswordResetOTP.objects.update_or_create(
                 user=user, defaults={"otp": otp, "created_at": timezone.now()}
             )
+            print(f"OTP saved: {otp_obj}, created: {created}")
         except Exception as e:
             print(f"Error saving OTP: {str(e)}")
             messages.error(request, "An error occurred while processing your request. Please try again.")
@@ -150,12 +169,15 @@ def forgot_password(request):
             message_body=otp_message,
         )
         
+        print(f"OTP sent result: {otp_sent}")
+        
         if not otp_sent:
             messages.error(request, "Failed to send OTP. Please contact support or try again later.")
             return redirect("forgot_password")
 
         # Store user id in session for verify_otp view
         request.session["reset_user_id"] = user.id
+        print(f"Session stored: {request.session['reset_user_id']}")
 
         # Show success message
         messages.success(request, f"OTP has been sent to {email}.")
@@ -169,6 +191,9 @@ def send_otp_email(user, email, otp, subject="Your OTP for Verification", messag
     Utility function to send OTP via email
     Works both in development and production (Render deployment)
     """
+    print(f"Attempting to send OTP email to: {email}")
+    print(f"Email settings check - HOST: {settings.EMAIL_HOST}, USER: {settings.EMAIL_HOST_USER}, PASSWORD: {'SET' if settings.EMAIL_HOST_PASSWORD else 'NOT SET'}")
+    
     try:
         # Check if email settings are properly configured
         if not hasattr(settings, 'EMAIL_HOST') or not settings.EMAIL_HOST:
@@ -180,6 +205,7 @@ def send_otp_email(user, email, otp, subject="Your OTP for Verification", messag
             print("Email credentials are not configured properly")
             return False
             
+        print(f"Sending email with subject: {subject}")
         send_mail(
             subject,
             message_body,
@@ -240,16 +266,25 @@ def send_general_otp(request, email, purpose="verification", user=None):
 
 def verify_otp(request):
     if request.method == "POST":
+        # Debug: Print request information
+        print(f"Verify OTP - Request POST data: {request.POST}")
+        
         otp = request.POST.get("otp")
         password = request.POST.get("password")
 
+        print(f"Received OTP: {otp}")
+        print(f"Received password: {'***' if password else 'None'}")
+
         user_id = request.session.get("reset_user_id")
+        print(f"Session user_id: {user_id}")
+        
         if not user_id:
             messages.error(request, "Session expired. Try again.")
             return redirect("forgot_password")
 
         try:
             user = User.objects.get(id=user_id)
+            print(f"Found user for OTP verification: {user}")
         except User.DoesNotExist:
             messages.error(request, "User not found. Please try again.")
             return redirect("forgot_password")
@@ -260,6 +295,7 @@ def verify_otp(request):
 
         try:
             otp_obj = PasswordResetOTP.objects.filter(user=user, otp=otp).first()
+            print(f"Found OTP object: {otp_obj}")
         except Exception as e:
             messages.error(request, "An error occurred while verifying OTP. Please try again.")
             print(f"Error retrieving OTP: {str(e)}")
@@ -282,6 +318,7 @@ def verify_otp(request):
             user.set_password(password)
             user.save()
             otp_obj.delete()
+            print("Password updated successfully")
         except Exception as e:
             messages.error(request, "An error occurred while resetting your password. Please try again.")
             print(f"Error updating password: {str(e)}")
@@ -311,6 +348,7 @@ Hospital Management System
         # Clear session
         try:
             del request.session["reset_user_id"]
+            print("Session cleared")
         except KeyError:
             pass  # Session key doesn't exist, which is fine
 
