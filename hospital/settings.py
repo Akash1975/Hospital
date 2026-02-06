@@ -160,10 +160,10 @@ if IS_ON_RENDER:
     EMAIL_USE_TLS = True
     
     # Use environment variables for Gmail credentials
-    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "akashdhaigude1907@gmail.com")
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
     
-    DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER", "akashdhaigude1907@gmail.com")
+    DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER")
 else:
     # Local development settings - using Gmail SMTP
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

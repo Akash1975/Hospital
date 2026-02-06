@@ -148,10 +148,15 @@ def send_otp_email(user, email, otp, subject="Your OTP for Verification", messag
     Works both in development and production (Render deployment)
     """
     try:
+        # Check if email settings are properly configured
+        if not hasattr(settings, 'EMAIL_HOST') or not settings.EMAIL_HOST:
+            print("Email settings are not configured properly")
+            return False
+            
         send_mail(
             subject,
             message_body.format(otp=otp),
-            settings.DEFAULT_FROM_EMAIL,
+            settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER,
             [email],
             fail_silently=False,
         )
