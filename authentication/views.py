@@ -2,22 +2,13 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
-from .forms import RegisterForm
 from django.contrib import messages
 from django.core.mail import send_mail
-from .models import PasswordResetOTP
+from django.conf import settings
+from django.contrib.auth.models import User
 import random
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.core.mail import send_mail
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.core.mail import send_mail
-from django.conf import settings
-
-from .forms import ForgotPasswordForm, OTPVerificationForm, ResetPasswordForm
+from .forms import RegisterForm, ForgotPasswordForm, OTPVerificationForm, ResetPasswordForm
 from .models import PasswordResetOTP
 
 
@@ -83,9 +74,11 @@ def forgot_password(request):
                     request.session["reset_user"] = user.id
                     messages.success(request, "OTP sent to your email")
                     return redirect("verify_otp_reset")
+                except ValueError as ve:
+                    messages.error(request, "Email service is not configured. Please contact administrator.")
+                    print(f"Email configuration error: {ve}")
                 except Exception as e:
-                    messages.error(request, f"Failed to send email: {str(e)}")
-                    # Log the error for debugging
+                    messages.error(request, f"Failed to send email. Please try again.")
                     print(f"Email sending failed: {e}")
 
             except User.DoesNotExist:
