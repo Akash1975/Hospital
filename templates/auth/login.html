@@ -1,7 +1,4 @@
-{% extends "layout/main.html" %}
-{% load static %}
-
-{% block content %}
+{% extends "layout/main.html" %} {% load static %} {% block content %}
 
 <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 
@@ -10,8 +7,8 @@
         animation: none !important;
         transition: none !important;
     }
-
     /* 🔝 Top fixed message */
+    
     .top-message {
         position: fixed;
         top: 10px;
@@ -25,13 +22,11 @@
 </style>
 
 <!-- ✅ TOP MESSAGE SECTION -->
-{% if messages %}
-{% for message in messages %}
+{% if messages %} {% for message in messages %}
 <div class="alert alert-{{ message.tags }} top-message" id="autoHideMsg">
     {{ message }}
 </div>
-{% endfor %}
-{% endif %}
+{% endfor %} {% endif %}
 
 <div class="auth-wrapper">
     <div class="auth-card">
@@ -54,9 +49,7 @@
             <h3>Login Account</h3>
 
             <form method="post">
-                {% csrf_token %}
-
-                {% if form.errors %}
+                {% csrf_token %} {% if form.errors %}
                 <div class="alert alert-danger">
                     Please fix the errors below.
                 </div>
@@ -65,8 +58,7 @@
                 <!-- Username -->
                 <div class="form-group">
                     <label>Username</label>
-                    <input type="text" name="username" class="form-control" placeholder="Enter username"
-                        value="{{ form.username.value|default:'' }}" required>
+                    <input type="text" name="username" class="form-control" placeholder="Enter username" value="{{ form.username.value|default:'' }}" required>
                     <small class="text-danger">{{ form.username.errors }}</small>
                 </div>
 
@@ -76,10 +68,6 @@
                     <input type="password" name="password" class="form-control" placeholder="Enter password" required>
                     <small class="text-danger">{{ form.password.errors }}</small>
                 </div>
-
-                <a href="{% url 'forgot_password' %}" class="d-block mt-2">
-                    Forgot Password?
-                </a>
 
                 <button type="submit" class="btn btn-primary w-100 mt-3">
                     Login
@@ -97,7 +85,7 @@
 
 <!-- ✅ AUTO HIDE AFTER 5 SECONDS (NO ANIMATION) -->
 <script>
-    setTimeout(function () {
+    setTimeout(function() {
         const msg = document.getElementById("autoHideMsg");
         if (msg) {
             msg.style.display = "none";

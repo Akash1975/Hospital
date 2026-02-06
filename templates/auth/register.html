@@ -1,7 +1,4 @@
-{% extends "layout/main.html" %}
-{% load static %}
-
-{% block content %}
+{% extends "layout/main.html" %} {% load static %} {% block content %}
 
 <!-- AUTH PAGE STYLES -->
 <link rel="stylesheet" href="{% static 'css/auth.css' %}">
@@ -32,9 +29,7 @@
             <h3>Create Account</h3>
 
             <form method="post">
-                {% csrf_token %}
-
-                {% if form.errors %}
+                {% csrf_token %} {% if form.errors %}
                 <div class="alert alert-danger">
                     Please fix the errors below.
                 </div>
@@ -43,23 +38,19 @@
                 <!-- Username -->
                 <div class="form-group">
                     <label>First Name</label>
-                    <input type="text" name="first_name" class="form-control" placeholder="Enter first_name"
-                        value="{{ form.first_name.value|default:'' }}" required>
+                    <input type="text" name="first_name" class="form-control" placeholder="Enter first_name" value="{{ form.first_name.value|default:'' }}" required>
                     <small class="text-danger">{{ form.first_name.errors }}</small>
 
                     <label>Last Name</label>
-                    <input type="text" name="last_name" class="form-control" placeholder="Enter last_name"
-                        value="{{ form.last_name.value|default:'' }}" required>
+                    <input type="text" name="last_name" class="form-control" placeholder="Enter last_name" value="{{ form.last_name.value|default:'' }}" required>
                     <small class="text-danger">{{ form.last_name.errors }}</small>
 
                     <label>Email:</label>
-                    <input type="text" name="email" class="form-control" placeholder="Enter email"
-                        value="{{ form.email.value|default:'' }}" required>
+                    <input type="text" name="email" class="form-control" placeholder="Enter email" value="{{ form.email.value|default:'' }}" required>
                     <small class="text-danger">{{ form.email.errors }}</small>
 
                     <label>Username</label>
-                    <input type="text" name="username" class="form-control" placeholder="Enter username"
-                        value="{{ form.username.value|default:'' }}" required>
+                    <input type="text" name="username" class="form-control" placeholder="Enter username" value="{{ form.username.value|default:'' }}" required>
                     <small class="text-danger">{{ form.username.errors }}</small>
                 </div>
 
@@ -73,8 +64,7 @@
                 <!-- Confirm Password -->
                 <div class="form-group">
                     <label>Confirm Password</label>
-                    <input type="password" name="password2" class="form-control" placeholder="Confirm password"
-                        required>
+                    <input type="password" name="password2" class="form-control" placeholder="Confirm password" required>
                     <small class="text-danger">{{ form.password2.errors }}</small>
                 </div>
 
