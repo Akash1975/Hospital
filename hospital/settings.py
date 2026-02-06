@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-i!y^_u(7%7s64tl0umdyaaoy!a-34+h+k#+md$#%p77tg%-e&3"
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-i!y^_u(7%7s64tl0umdyaaoy!a-34+h+k#+md$#%p77tg%-e&3')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
@@ -33,7 +33,12 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    ".onrender.com",  # <-- your actual Render domain
+    "*.onrender.com",  # Allow all onrender.com subdomains
+]
+
+# CSRF trusted origins for production
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
 ]
     
 
@@ -55,7 +60,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # Add this
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -89,14 +94,12 @@ WSGI_APPLICATION = "hospital.wsgi.application"
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 TIME_ZONE = "Asia/Kolkata"
-
+USE_TZ = True
 
 import dj_database_url
 
 DATABASES = {
-    "default": dj_database_url.parse(
-        "postgresql://neondb_owner:npg_9rvMTS3OEyac@ep-little-boat-a1hzxceg-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-    )
+    "default": dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 }
 
 
@@ -135,13 +138,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-# Optional: enable compression and caching
+
+# WhiteNoise configuration for serving static files in production
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
@@ -152,27 +156,17 @@ import os
 IS_ON_RENDER = 'RENDER_EXTERNAL_URL' in os.environ or 'RENDER' in os.environ
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-if IS_ON_RENDER:
-    # Production settings for Render deployment using Gmail
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp.gmail.com"
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    
-    # Use environment variables for Gmail credentials
-    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-    
-    DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER")
-else:
-    # Local development settings - using Gmail SMTP
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp.gmail.com"
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "akashdhaigude1907@gmail.com")
-    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-    DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER", "akashdhaigude1907@gmail.com")
+# Email configuration
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False').lower() == 'true'
+
+# Use environment variables for Gmail credentials
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 
 
 JAZZMIN_SETTINGS = {

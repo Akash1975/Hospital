@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 class PasswordResetOTP(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    otp = models.CharField(max_length=6)
+    otp = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def is_expired(self):

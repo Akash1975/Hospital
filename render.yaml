@@ -1,0 +1,27 @@
+services:
+- type: web
+  name: django-hospital-app
+  env: python
+  region: frankfurt  # or the region of your choice
+  buildCommand: |
+    pip install -r requirements.txt
+    python manage.py collectstatic --noinput
+  startCommand: gunicorn hospital.wsgi:application
+  envVars:
+  - key: DEBUG
+    value: False
+  - key: SECRET_KEY
+    generateValue: true
+  - key: DATABASE_URL
+    fromDatabase:
+      name: hospital-db
+      property: connectionString
+  - key: EMAIL_HOST_USER
+    sync: false  # We'll set this manually in the dashboard
+  - key: EMAIL_HOST_PASSWORD
+    sync: false  # We'll set this manually in the dashboard
+
+databases:
+- name: hospital-db
+  region: frankfurt
+  plan: free

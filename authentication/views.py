@@ -120,12 +120,14 @@ def forgot_password(request):
         )
 
         # Send OTP via email
+        otp_message = f"Hello {user.first_name or user.username},\n\nYour OTP is: {otp}\nIt will expire in 10 minutes."
+        
         otp_sent = send_otp_email(
             user=user,
             email=email,
             otp=otp,
             subject="Your OTP for Password Reset",
-            message_body=f"Hello user {user.username},\n\nYour OTP is: {otp}\nIt will expire in 10 minutes.",
+            message_body=otp_message,
         )
         
         if not otp_sent:
@@ -155,7 +157,7 @@ def send_otp_email(user, email, otp, subject="Your OTP for Verification", messag
             
         send_mail(
             subject,
-            message_body.format(otp=otp),
+            message_body,
             settings.DEFAULT_FROM_EMAIL or settings.EMAIL_HOST_USER,
             [email],
             fail_silently=False,
