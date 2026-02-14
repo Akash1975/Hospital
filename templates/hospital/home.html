@@ -51,7 +51,7 @@
 
 <!-- ================= MESSAGES ================= -->
 {% if messages %}
-<div class="fixed-top d-flex flex-column align-items-center mt-3" style="z-index: 1100;">
+<div class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
   {% for message in messages %}
   <div class="alert 
         {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} 
@@ -62,11 +62,11 @@
 </div>
 
 <script>
-  // Hide messages after 5 seconds with fade-out animation
   setTimeout(() => {
     const messages = document.querySelectorAll('.animated-message');
     messages.forEach(msg => {
       msg.style.animation = 'slideFadeOut 0.5s forwards';
+      setTimeout(() => msg.remove(), 500); // remove from DOM
     });
   }, 5000);
 </script>
