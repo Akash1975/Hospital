@@ -21,6 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = "django-insecure-%p4n^&6)h^g-%&7c4s)iqz4(q-cec(vdebwyh%9lj5^6a!8@pj"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=True, cast=bool)
@@ -44,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "hp_management",
     "authentication",
-    "sendgrid_backend"
+    "sendgrid_backend",
 ]
 
 MIDDLEWARE = [
@@ -82,13 +84,12 @@ WSGI_APPLICATION = "hospital.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
-
-import dj_database_url
 DATABASES = {
-    "default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))
+    "default": {
+        "ENGINE": os.environ.get("DATABASE_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.environ.get("DATABASE_NAME", os.path.join(BASE_DIR, "db.sqlite3")),
+    }
 }
-
 
 
 # Password validation
@@ -130,7 +131,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
@@ -157,9 +158,11 @@ JAZZMIN_SETTINGS = {
 # EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
 # EMAIL_USE_SSL = config("EMAIL_USE_SSL", default=False, cast=bool)
 
-# ================= SENDGRID EMAIL CONFIG =================
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 
-SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+SENDGRID_API_KEY = config("SENDGRID_API_KEY")
+
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+SENDGRID_ECHO_TO_STDOUT = False
 
 DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"

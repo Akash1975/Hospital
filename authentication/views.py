@@ -8,7 +8,12 @@ from django.conf import settings
 from django.contrib.auth.models import User
 import random
 
-from .forms import RegisterForm, ForgotPasswordForm, OTPVerificationForm, ResetPasswordForm
+from .forms import (
+    RegisterForm,
+    ForgotPasswordForm,
+    OTPVerificationForm,
+    ResetPasswordForm,
+)
 from .models import PasswordResetOTP
 
 
@@ -75,7 +80,10 @@ def forgot_password(request):
                     messages.success(request, "OTP sent to your email")
                     return redirect("verify_otp_reset")
                 except ValueError as ve:
-                    messages.error(request, "Email service is not configured. Please contact administrator.")
+                    messages.error(
+                        request,
+                        "Email service is not configured. Please contact administrator.",
+                    )
                     print(f"Email configuration error: {ve}")
                 except Exception as e:
                     messages.error(request, f"Failed to send email. Please try again.")
@@ -127,16 +135,14 @@ def verify_otp_and_reset(request):
 
 
 def send_otp_email(user_email, otp):
-    import logging
-    logger = logging.getLogger(__name__)
+    from django.conf import settings
+    from django.core.mail import send_mail
+    from django.core.validators import validate_email
+    from django.core.exceptions import ValidationError
 
-    # Check if email settings are configured
-    email_host_user = getattr(settings, 'EMAIL_HOST_USER', None)
-    email_host_password = getattr(settings, 'EMAIL_HOST_PASSWORD', None)
-    
-    if not email_host_user or not email_host_password:
-        logger.error("EMAIL_HOST_USER or EMAIL_HOST_PASSWORD not configured")
-        raise ValueError("Email service is not properly configured.")
+    # Check if SendGrid API key exists
+    if not getattr(settings, "SENDGRID_API_KEY", None):
+        raise ValueError("SendGrid API key is not configured.")
 
     subject = "Hospital Password Reset OTP"
 
@@ -155,25 +161,15 @@ Hospital Management System
 """
 
     try:
-        # Validate email address format before sending
-        from django.core.validators import validate_email
-        from django.core.exceptions import ValidationError
-        
         validate_email(user_email)
-        
+
         send_mail(
             subject,
             message,
-            email_host_user,  # Use the retrieved value instead of direct access
+            settings.DEFAULT_FROM_EMAIL,
             [user_email],
             fail_silently=False,
         )
-        logger.info(f"OTP email sent successfully to {user_email}")
 
     except ValidationError:
-        logger.error(f"Invalid email address: {user_email}")
         raise ValueError("Invalid email address format.")
-    except Exception as e:
-        logger.error(f"Failed to send OTP email: {str(e)}")
-        # Re-raise the exception to be handled by the calling function
-        raise
