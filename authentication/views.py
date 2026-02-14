@@ -147,7 +147,7 @@ def send_otp_email(user_email, otp):
     subject = "Hospital Password Reset OTP"
 
     message = f"""
-Hello,
+Hello ,
 
 Your OTP for password reset is:
 
