@@ -33,6 +33,7 @@
                             <th>Doctor_Name</th>
                             <th>Message</th>
                             <th>Booked On</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -75,6 +76,18 @@
                                     {{ appointment.created_at|date:"d M Y, h:i A" }}
                                 </small>
                             </td>
+                            <td>
+                                {% if appointment.appointment_status == "CONFIRMED" %}
+                                <span class="badge bg-success">{{ appointment.appointment_status }}</span>
+                                {% elif appointment.appointment_status == "PENDING" %}
+                                <span class="badge bg-warning text-dark">{{ appointment.appointment_status }}</span>
+                                {% elif appointment.appointment_status == "CANCELLED" %}
+                                <span class="badge bg-danger">{{ appointment.appointment_status }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ appointment.appointment_status }}</span>
+                                {% endif %}
+                            </td>
+
                         </tr>
                         {% endfor %}
                     </tbody>
