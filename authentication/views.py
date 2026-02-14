@@ -130,9 +130,13 @@ def send_otp_email(user_email, otp):
     import logging
     logger = logging.getLogger(__name__)
 
-    if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
+    # Check if email settings are configured
+    email_host_user = getattr(settings, 'EMAIL_HOST_USER', None)
+    email_host_password = getattr(settings, 'EMAIL_HOST_PASSWORD', None)
+    
+    if not email_host_user or not email_host_password:
         logger.error("EMAIL_HOST_USER or EMAIL_HOST_PASSWORD not configured")
-        raise ValueError("Email credentials not configured.")
+        raise ValueError("Email service is not properly configured.")
 
     subject = "Hospital Password Reset OTP"
 
@@ -151,15 +155,25 @@ Hospital Management System
 """
 
     try:
+        # Validate email address format before sending
+        from django.core.validators import validate_email
+        from django.core.exceptions import ValidationError
+        
+        validate_email(user_email)
+        
         send_mail(
             subject,
             message,
-            settings.EMAIL_HOST_USER,
+            email_host_user,  # Use the retrieved value instead of direct access
             [user_email],
             fail_silently=False,
         )
         logger.info(f"OTP email sent successfully to {user_email}")
 
+    except ValidationError:
+        logger.error(f"Invalid email address: {user_email}")
+        raise ValueError("Invalid email address format.")
     except Exception as e:
         logger.error(f"Failed to send OTP email: {str(e)}")
+        # Re-raise the exception to be handled by the calling function
         raise
