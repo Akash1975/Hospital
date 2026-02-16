@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_image = models.ImageField(upload_to="profiles/", blank=True, null=True)
+    profile_image = CloudinaryField('image', blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -17,7 +18,7 @@ class Doctor(models.Model):
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
     joined_at = models.DateTimeField(auto_now_add=True)
-    doctor_image = models.ImageField(upload_to="doctors/", blank=True, null=True)
+    doctor_image = CloudinaryField('image', blank=True, null=True)
 
     def __str__(self):
         return f"Dr. {self.name} ({self.specialization})"
@@ -49,7 +50,7 @@ class Appointment(models.Model):
     
 
 class About(models.Model):
-    about_image = models.ImageField(upload_to="about/", blank=True, null=True)
+    about_image = CloudinaryField('image', blank=True, null=True)
     about_text = models.TextField()
     
     def __str__(self):

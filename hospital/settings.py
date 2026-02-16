@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     "hp_management",
     "authentication",
     "sendgrid_backend",
+    "cloudinary",
+    "cloudinary_storage",
 ]
 
 MIDDLEWARE = [
@@ -167,3 +169,26 @@ SENDGRID_ECHO_TO_STDOUT = False
 
 DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
 
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+cloudinary.config(
+    cloud_name=config("CLOUD_NAME"),
+    api_key=config("API_KEY"),
+    api_secret=config("API_SECRET"),
+    secure=True,
+)
+
+
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
