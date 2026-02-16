@@ -11,6 +11,7 @@ class Profile(models.Model):
         return self.user.username
 
 
+
 class Doctor(models.Model):
     name = models.CharField(max_length=100)
     specialization = models.CharField(max_length=100)

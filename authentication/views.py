@@ -75,7 +75,7 @@ def forgot_password(request):
 
                 # Add better error handling
                 try:
-                    send_otp_email(email, otp)
+                    send_otp_email(user, otp)
                     request.session["reset_user"] = user.id
                     messages.success(request, "OTP sent to your email")
                     return redirect("verify_otp_reset")
@@ -124,6 +124,7 @@ def verify_otp_and_reset(request):
         user = User.objects.get(id=user_id)
         user.set_password(new_pass)
         user.save()
+        send_password_changed_email(user)
 
         otp_obj.delete()
         del request.session["reset_user"]
@@ -134,20 +135,18 @@ def verify_otp_and_reset(request):
     return render(request, "auth/verify_otp_reset.html")
 
 
-def send_otp_email(user_email, otp):
+def send_otp_email(user, otp):
     from django.conf import settings
     from django.core.mail import send_mail
     from django.core.validators import validate_email
     from django.core.exceptions import ValidationError
 
-    # Check if SendGrid API key exists
-    if not getattr(settings, "SENDGRID_API_KEY", None):
-        raise ValueError("SendGrid API key is not configured.")
-
     subject = "Hospital Password Reset OTP"
 
     message = f"""
-Hello ,
+Hello user {user.username},
+
+We received a request to reset your password.
 
 Your OTP for password reset is:
 
@@ -155,21 +154,75 @@ Your OTP for password reset is:
 
 This OTP is valid for 10 minutes.
 
-If you did not request this, please ignore.
+If you did not request this, please ignore this email.
 
 Hospital Management System
 """
 
     try:
-        validate_email(user_email)
+        validate_email(user.email)
 
         send_mail(
             subject,
             message,
             settings.DEFAULT_FROM_EMAIL,
-            [user_email],
+            [user.email],
             fail_silently=False,
         )
 
     except ValidationError:
         raise ValueError("Invalid email address format.")
+
+
+def send_password_changed_email(user):
+    from django.conf import settings
+    from django.core.mail import send_mail
+
+    subject = "Password Changed Successfully"
+
+    message = f"""
+Hello user {user.username},
+
+Your password has been successfully changed.
+
+If you did not perform this action, please contact support immediately.
+
+Thank you,
+Hospital Management System
+"""
+
+    send_mail(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        fail_silently=False,
+    )
+
+
+def resend_otp(request):
+    if "reset_user" not in request.session:
+        return redirect("forgot_password")
+
+    user_id = request.session["reset_user"]
+
+    try:
+        user = User.objects.get(id=user_id)
+
+        # Delete old OTPs (optional but recommended)
+        PasswordResetOTP.objects.filter(user=user).delete()
+
+        # Generate new OTP
+        otp = str(random.randint(100000, 999999))
+        PasswordResetOTP.objects.create(user=user, otp=otp)
+
+        # Send new OTP
+        send_otp_email(user, otp)
+
+        messages.success(request, "New OTP sent successfully.")
+
+    except Exception as e:
+        messages.error(request, "Failed to resend OTP.")
+        print("Resend OTP error:", e)
+
+    return redirect("verify_otp_reset")
