@@ -1,6 +1,6 @@
-{% extends "layout/main.html" %} 
+{% extends "layout/main.html" %}
 
-{% load static %} 
+{% load static %}
 
 {% block content %}
 
@@ -42,19 +42,23 @@
                 <!-- Username -->
                 <div class="form-group">
                     <label>First Name</label>
-                    <input type="text" name="first_name" class="form-control" placeholder="" value="{{ form.first_name.value|default:'' }}" required>
+                    <input type="text" name="first_name" class="form-control" placeholder=""
+                        value="{{ form.first_name.value|default:'' }}" required>
                     <small class="text-danger">{{ form.first_name.errors }}</small>
 
                     <label>Last Name</label>
-                    <input type="text" name="last_name" class="form-control" placeholder="" value="{{ form.last_name.value|default:'' }}" required>
+                    <input type="text" name="last_name" class="form-control" placeholder=""
+                        value="{{ form.last_name.value|default:'' }}" required>
                     <small class="text-danger">{{ form.last_name.errors }}</small>
 
                     <label>Email:</label>
-                    <input type="text" name="email" class="form-control" placeholder="" value="{{ form.email.value|default:'' }}" required>
+                    <input type="text" name="email" class="form-control" placeholder=""
+                        value="{{ form.email.value|default:'' }}" required>
                     <small class="text-danger">{{ form.email.errors }}</small>
 
                     <label>Username</label>
-                    <input type="text" name="username" class="form-control" placeholder="" value="{{ form.username.value|default:'' }}" required>
+                    <input type="text" name="username" class="form-control" placeholder=""
+                        value="{{ form.username.value|default:'' }}" required>
                     <small class="text-danger">{{ form.username.errors }}</small>
                 </div>
 
@@ -87,5 +91,32 @@
 
     </div>
 </div>
+
+<!-- Hidden Identity -->
+<div class="hidden-identity">
+    Created By Akya
+</div>
+
+<style>
+    .hidden-identity {
+        position: fixed;
+        bottom: 3px;
+        right: 8px;
+        font-size: 9px;
+        letter-spacing: 1px;
+        color: rgba(0, 0, 0, 0.05);
+        /* almost invisible */
+        user-select: none;
+        pointer-events: none;
+        font-family: monospace;
+        transition: 0.4s ease;
+    }
+
+    /* Only visible if someone zooms or inspects */
+    .hidden-identity:hover {
+        color: rgba(0, 0, 0, 0.3);
+    }
+</style>
+
 
 {% endblock %}
