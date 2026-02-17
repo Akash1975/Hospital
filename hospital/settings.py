@@ -169,18 +169,20 @@ SENDGRID_ECHO_TO_STDOUT = False
 
 DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
 
+# from decouple import config
+# import cloudinary
+# import cloudinary.uploader
+# import cloudinary.api
+
+# cloudinary.config(
+#     cloud_name=config("CLOUD_NAME"),
+#     api_key=config("API_KEY"),
+#     api_secret=config("API_SECRET"),
+#     secure=True,
+# )
 
 import cloudinary
-import cloudinary.uploader
-import cloudinary.api
-
-cloudinary.config(
-    cloud_name=config("CLOUD_NAME"),
-    api_key=config("API_KEY"),
-    api_secret=config("API_SECRET"),
-    secure=True,
-)
-
+cloudinary.config(secure=True)
 
 # DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
