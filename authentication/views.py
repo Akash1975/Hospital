@@ -17,20 +17,26 @@ from .forms import (
 from .models import PasswordResetOTP
 
 
-# Create your views here.
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.urls import reverse
+
+
 def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-
-            user.first_name = form.cleaned_data["first_name"]
-            user.last_name = form.cleaned_data["last_name"]
-            user.email = form.cleaned_data["email"]
-
+            user.is_active = False  # 🚨 Important
             user.save()
-            login(request, user)
-            return redirect("home")
+
+            send_verification_email(request, user)
+
+            messages.success(
+                request, "Please verify your email to activate your account."
+            )
+            return redirect("login")
     else:
         form = RegisterForm()
 
@@ -40,14 +46,19 @@ def register_view(request):
 def login_view(request):
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
+
         if form.is_valid():
             user = form.get_user()
+
+            if not user.is_active:
+                messages.error(request, "Please verify your email before login.")
+                return redirect("login")
+
             login(request, user)
             return redirect("home")
 
     else:
-        initial_data = {"username": "", "password": ""}
-        form = AuthenticationForm(initial=initial_data)
+        form = AuthenticationForm()
 
     return render(request, "auth/login.html", {"form": form})
 
@@ -226,3 +237,61 @@ def resend_otp(request):
         print("Resend OTP error:", e)
 
     return redirect("verify_otp_reset")
+
+
+def send_verification_email(request, user):
+    from django.core.mail import send_mail
+    from django.conf import settings
+
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = default_token_generator.make_token(user)
+
+    verification_link = request.build_absolute_uri(
+        reverse("verify_email", kwargs={"uidb64": uid, "token": token})
+    )
+
+    subject = "Verify Your Email - Invision Hospital"
+
+    message = f"""
+Hello {user.username},
+
+Thank you for registering at Invision Hospital.
+
+Click the link below to verify your email:
+
+{verification_link}
+
+If you did not register, ignore this email.
+
+Regards,
+Invision Hospital
+"""
+
+    send_mail(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        fail_silently=False,
+    )
+
+
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+
+
+def verify_email(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except:
+        user = None
+
+    if user and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, "Email verified successfully! You can now login.")
+        return redirect("login")
+    else:
+        messages.error(request, "Verification link is invalid or expired.")
+        return redirect("register")

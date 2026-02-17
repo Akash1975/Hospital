@@ -9,5 +9,7 @@ urlpatterns = [
     path("forgot-password/", forgot_password, name="forgot_password"),
     path("verify-reset/", verify_otp_and_reset, name="verify_otp_reset"),
     path("resend-otp/", resend_otp, name="resend_otp"),
+    path("verify-email/<uidb64>/<token>/", verify_email, name="verify_email"),
+
 
 ]

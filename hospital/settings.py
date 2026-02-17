@@ -33,6 +33,8 @@ ALLOWED_HOSTS = [
     ".onrender.com",
 ]
 
+# ALLOWED_HOSTS = ["*"]
+
 
 # Application definition
 
@@ -132,8 +134,8 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# MEDIA_URL = "/media/"
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
@@ -170,16 +172,16 @@ SENDGRID_ECHO_TO_STDOUT = False
 DEFAULT_FROM_EMAIL = "akashdhaigude1907@gmail.com"
 
 # from decouple import config
-# import cloudinary
-# import cloudinary.uploader
-# import cloudinary.api
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
-# cloudinary.config(
-#     cloud_name=config("CLOUD_NAME"),
-#     api_key=config("API_KEY"),
-#     api_secret=config("API_SECRET"),
-#     secure=True,
-# )
+cloudinary.config(
+    cloud_name=config("CLOUD_NAME"),
+    api_key=config("API_KEY"),
+    api_secret=config("API_SECRET"),
+    secure=True,
+)
 
 import cloudinary
 cloudinary.config(secure=True)
