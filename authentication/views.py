@@ -37,6 +37,7 @@ def register_view(request):
                 request, "Please verify your email to activate your account."
             )
             return redirect("login")
+        
     else:
         form = RegisterForm()
 
@@ -56,6 +57,8 @@ def login_view(request):
 
             login(request, user)
             return redirect("home")
+        else:
+            messages.error(request, "Invalid username or password.")
 
     else:
         form = AuthenticationForm()
