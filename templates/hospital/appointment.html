@@ -1,5 +1,6 @@
 {% extends "layout/main.html" %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% block content %}
 
@@ -7,88 +8,117 @@
 
     <!-- Page Header -->
     <div class="text-center mb-5">
-        <h2 class="fw-bold text-primary">
-            <i class="bi bi-calendar2-check"></i> Book an Appointment
+        <h2 class="fw-bold text-primary display-6">
+            Book an Appointment
         </h2>
-        <p class="text-muted">
-            Fill in the details below to schedule your hospital visit
+        <p class="text-muted fs-6">
+            Schedule your visit easily in a few clicks.
         </p>
     </div>
 
-    <!-- Messages -->
-
     <!-- Appointment Card -->
-    <div class="card appointment-card shadow-lg border-0 mx-auto">
-        <div class="card-body p-4">
+    <div class="card appointment-card shadow-lg mx-auto">
+        <div class="card-body p-5">
 
-            <form method="post" novalidate>
+            <form method="post" novalidate class="pointer">
                 {% csrf_token %}
                 {{ form.non_field_errors }}
 
                 {% for field in form %}
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">
+                <div class="mb-4">
+                    <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
                         {{ field.label }}
                         {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
                     </label>
-                    {{ field }}
-                    <small class="text-danger">{{ field.errors }}</small>
+                    {{ field|add_class:"form-control form-control-lg" }}
+                    <div class="text-danger small mt-1">{{ field.errors }}</div>
                 </div>
                 {% endfor %}
 
-                <button type="submit" class="btn btn-primary w-100 py-2 mt-3">
-                    <i class="bi bi-check-circle"></i> Confirm Appointment
+                <button type="submit" class="btn btn-gradient w-100 py-2 mb-3">
+                    Book Appointment
                 </button>
 
-                <a href="{% url 'home' %}" class="btn btn-outline-secondary w-100 mt-3">
-                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                <a href="{% url 'home' %}" class="btn btn-outline-dark w-100 py-2">
+                    Back to Dashboard
                 </a>
             </form>
+
 
         </div>
     </div>
 
 </div>
 
-<!-- Extra Styling -->
+<!-- Modern Styling -->
 <style>
-    .appointment-card {
-        max-width: 600px;
-        border-radius: 16px;
-        animation: fadeUp 0.6s ease;
-        background: #ffffff;
+    body {
+        background: linear-gradient(135deg, #e0f7fa, #f8f9fa);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    .form-control,
-    select,
-    textarea {
-        border-radius: 10px;
-        padding: 10px 14px;
-        border: 1px solid #ced4da;
+    /* Card */
+    .appointment-card {
+        max-width: 600px;
+        border-radius: 20px;
+        background: #ffffff;
+        border: none;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Inputs */
+    .form-control {
+        border-radius: 12px;
+        padding: 1rem;
+        border: 1px solid #ccc;
+        background-color: #fefefe;
+        font-size: 1rem;
         transition: all 0.3s ease;
     }
 
-    .form-control:focus,
-    select:focus,
-    textarea:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, .25);
+    .form-control:focus {
+        border-color: #6610f2;
+        box-shadow: 0 0 0 0.2rem rgba(102, 16, 242, 0.2);
+        background-color: #fff;
     }
 
-    .btn-primary {
-        border-radius: 10px;
-        font-weight: 600;
-    }
-
-    .btn-outline-secondary {
-        border-radius: 10px;
+    /* Labels */
+    .form-label {
+        color: #555;
         font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
     }
 
-    .alert {
+    /* Buttons */
+    .btn-gradient {
+        background: linear-gradient(90deg, #6610f2, #0d6efd);
+        color: #fff;
+        font-weight: 600;
+        border-radius: 12px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 16, 242, 0.3);
+    }
+
+    .btn-outline-dark {
         border-radius: 12px;
         font-weight: 500;
-        animation: fadeIn 0.5s ease;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-dark:hover {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    /* Error Messages */
+    .text-danger {
+        font-size: 0.85rem;
     }
 </style>
 
