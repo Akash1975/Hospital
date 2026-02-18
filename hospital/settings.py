@@ -88,11 +88,13 @@ WSGI_APPLICATION = "hospital.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+import dj_database_url
+from decouple import config
+
 DATABASES = {
-    "default": {
-        "ENGINE": os.environ.get("DATABASE_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("DATABASE_NAME", os.path.join(BASE_DIR, "db.sqlite3")),
-    }
+    "default": dj_database_url.parse(
+        config("DATABASE_URL"), conn_max_age=600, ssl_require=True
+    )
 }
 
 
@@ -183,16 +185,6 @@ cloudinary.config(
     secure=True,
 )
 
-import cloudinary
-cloudinary.config(secure=True)
-
 # DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-STORAGES = {
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
