@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "sendgrid_backend",
     "cloudinary",
     "cloudinary_storage",
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
