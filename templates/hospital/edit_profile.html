@@ -22,11 +22,13 @@
             <!-- Profile Picture Preview -->
             <div class="text-center mb-4">
               {% if user.profile.profile_image %}
-              <img src="{{ user.profile.profile_image.url }}" alt="Profile Image"
-                class="rounded-circle border border-3 border-secondary" width="120" height="120">
+              <img src="{{ user.profile.profile_image.url }}" id="profileIcon" class="rounded-circle border border-2"
+                width="60" height="60" style="cursor: pointer" />
               {% else %}
-              <img src="{% static 'images/default-profile.png' %}" alt="Profile Image"
-                class="rounded-circle border border-3 border-secondary" width="120" height="120">
+              <img
+                src="https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=0d6efd&color=fff"
+                id="profileIcon" class="rounded-circle border border-2 border-primary" width="60" height="60"
+                style="cursor: pointer" alt="Profile" />
               {% endif %}
             </div>
 
