@@ -8,10 +8,10 @@
 
     <!-- Page Header -->
     <div class="text-center mb-5">
-        <h2 class="fw-bold text-primary display-6">
+        <h2 class="fw-bold display-6 text-info">
             Book an Appointment
         </h2>
-        <p class="text-muted fs-6">
+        <p class="text-light fs-6">
             Schedule your visit easily in a few clicks.
         </p>
     </div>
@@ -20,7 +20,7 @@
     <div class="card appointment-card shadow-lg mx-auto">
         <div class="card-body p-5">
 
-            <form method="post" novalidate class="pointer">
+            <form method="post" novalidate>
                 {% csrf_token %}
                 {{ form.non_field_errors }}
 
@@ -28,10 +28,16 @@
                 <div class="mb-4">
                     <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
                         {{ field.label }}
-                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                        {% if field.field.required %}
+                        <span class="text-danger">*</span>
+                        {% endif %}
                     </label>
+
                     {{ field|add_class:"form-control form-control-lg" }}
-                    <div class="text-danger small mt-1">{{ field.errors }}</div>
+
+                    <div class="text-danger small mt-1">
+                        {{ field.errors }}
+                    </div>
                 </div>
                 {% endfor %}
 
@@ -39,60 +45,84 @@
                     Book Appointment
                 </button>
 
-                <a href="{% url 'home' %}" class="btn btn-outline-dark w-100 py-2">
+                <a href="{% url 'home' %}" class="btn btn-outline-light w-100 py-2">
                     Back to Dashboard
                 </a>
             </form>
-
 
         </div>
     </div>
 
 </div>
 
-<!-- Modern Styling -->
+<!-- ================= MODERN GLASS STYLING ================= -->
 <style>
     body {
-        background: linear-gradient(135deg, #e0f7fa, #f8f9fa);
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #fff;
     }
 
-    /* Card */
+    /* Header */
+    h2 {
+        color: #00d4ff;
+    }
+
+    .text-light {
+        color: #dcdcdc !important;
+    }
+
+    /* Glass Card */
     .appointment-card {
-        max-width: 600px;
+        max-width: 650px;
         border-radius: 20px;
-        background: #ffffff;
-        border: none;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        color: #fff;
+        transition: 0.3s ease;
+    }
+
+    .appointment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 25px rgba(0, 212, 255, 0.4);
     }
 
     /* Inputs */
     .form-control {
         border-radius: 12px;
         padding: 1rem;
-        border: 1px solid #ccc;
-        background-color: #fefefe;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.08);
+        color: #fff;
         font-size: 1rem;
         transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .form-control::placeholder {
+        color: #ccc;
     }
 
     .form-control:focus {
-        border-color: #6610f2;
-        box-shadow: 0 0 0 0.2rem rgba(102, 16, 242, 0.2);
-        background-color: #fff;
+        border-color: #00d4ff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 212, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.12);
+        color: #fff;
     }
 
     /* Labels */
     .form-label {
-        color: #555;
+        color: #e0e0e0;
         font-weight: 500;
         margin-bottom: 0.5rem;
         display: block;
     }
 
-    /* Buttons */
+    /* Gradient Button */
     .btn-gradient {
-        background: linear-gradient(90deg, #6610f2, #0d6efd);
+        background: linear-gradient(45deg, #00d4ff, #007bff);
         color: #fff;
         font-weight: 600;
         border-radius: 12px;
@@ -100,25 +130,49 @@
         transition: all 0.3s ease;
     }
 
-    .btn-gradient:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(102, 16, 242, 0.3);
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator,
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
     }
 
-    .btn-outline-dark {
+    .btn-gradient:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 20px #00d4ff;
+    }
+
+    /* Back Button */
+    .btn-outline-light {
         border-radius: 12px;
         font-weight: 500;
-        transition: all 0.3s ease;
+        border: 1px solid #fff;
+        color: #fff;
+        transition: 0.3s;
     }
 
-    .btn-outline-dark:hover {
-        background-color: #343a40;
-        color: #fff;
+    .btn-outline-light:hover {
+        background: #fff;
+        color: #000;
     }
 
     /* Error Messages */
     .text-danger {
         font-size: 0.85rem;
+        color: #ff6b6b !important;
+    }
+
+    /* Fix Select Dropdown (Doctor Field) */
+    select.form-control {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        color: #fff !important;
+    }
+
+    select.form-control option {
+        background-color: #203a43;
+        /* dark background */
+        color: #fff;
+        /* white text */
     }
 </style>
 

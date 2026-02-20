@@ -41,7 +41,7 @@ def edit_profile(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            return redirect("home")
+            return redirect("edit_profile")
     else:
         user_form = EditProfileForm(instance=user)
         profile_form = ProfileImageForm(instance=profile)

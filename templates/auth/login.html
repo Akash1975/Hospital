@@ -2,8 +2,9 @@
 {% load static %}
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<link rel="stylesheet" href="{% static 'css/auth-modern.css' %}">
 
+<!-- Top Messages -->
 <style>
     .top-message {
         position: fixed;
@@ -29,64 +30,52 @@
         alert-dismissible fade show shadow-lg" role="alert">
 
         {{ message }}
-
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     {% endfor %}
 </div>
 {% endif %}
 
+<div class="auth-bg">
+    <div class="auth-container">
 
-<div class="auth-wrapper">
-    <div class="auth-card">
+        <h2 class="auth-title">Welcome Back</h2>
+        <p class="auth-subtitle">Login to your Hospital Management Account</p>
 
-        <!-- LEFT IMAGE -->
-        <div class="auth-left">
-            <img src="{% static 'images/Doctor.jpg' %}" alt="Doctor Image">
-            <div class="bottom-blue"></div>
-            <div class="overlay">
-                <h5>Welcome to</h5>
-                <h3>Invision</h3>
-                <h5>Hospital Management System</h5>
-                <small>Best based healthcare management platform</small>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <!-- <div class="error-box">
+                Invalid username or password.
+            </div> -->
+            {% endif %}
+
+            <input type="text" name="username" placeholder="Username" value="{{ form.username.value|default:'' }}"
+                required>
+
+            <input type="password" name="password" placeholder="Password" required>
+
+            <div style="text-align:right; margin-top:-10px; margin-bottom:15px;">
+                <a href="{% url 'forgot_password' %}" style="color:#00d4ff; font-size:13px;">
+                    Forgot Password?
+                </a>
             </div>
-        </div>
 
-        <!-- RIGHT FORM -->
-        <div class="auth-right">
-            <h3>Login Account</h3>
+            <button type="submit" class="auth-btn">
+                Login
+            </button>
 
-            <form method="post">
-                {% csrf_token %}
-
-                <div class="form-group mb-3">
-                    <label>Username</label>
-                    <input type="text" name="username" class="form-control" value="{{ form.username.value|default:'' }}"
-                        required>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label>Password</label>
-                    <input type="password" name="password" class="form-control" required>
-                </div>
-
-                <a href="{% url 'forgot_password' %}">Forgot Password?</a>
-
-                <button type="submit" class="btn btn-primary w-100 mt-3">
-                    Login
-                </button>
-
-                <p class="text-center mt-3 fs-6">
-                    Don't have an account?
-                    <a href="{% url 'register' %}">Register</a>
-                </p>
-            </form>
-        </div>
+            <p class="login-link">
+                Don't have an account?
+                <a href="{% url 'register' %}">Register</a>
+            </p>
+        </form>
 
     </div>
 </div>
 
-<!-- ✅ AUTO HIDE SMOOTH -->
+<!-- Auto Hide Messages -->
 <script>
     setTimeout(function () {
         const alerts = document.querySelectorAll('.alert');

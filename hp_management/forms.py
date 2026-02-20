@@ -2,16 +2,24 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import Profile, Appointment, Doctor
 
+
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'username']
+        fields = ["first_name", "last_name", "email", "username"]
+
 
 class ProfileImageForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['profile_image']
-        
+        fields = ["profile_image"]
+        widgets = {
+            "profile_image": forms.FileInput(
+                attrs={"class": "form-control form-control-lg"}
+            )
+        }
+
+
 # class RegisterForm(forms.ModelForm):
 #     password1 = forms.CharField(widget=forms.PasswordInput)
 #     password2 = forms.CharField(widget=forms.PasswordInput)
@@ -39,29 +47,25 @@ class ProfileImageForm(forms.ModelForm):
 #         return user
 
 
-
 class AppointmentForm(forms.ModelForm):
     class Meta:
         model = Appointment
         fields = [
-            'doctor',
-            'name',
-            'email',
-            'phone',
-            'date',
-            'time',
-            'address',
-            'message'
+            "doctor",
+            "name",
+            "email",
+            "phone",
+            "date",
+            "time",
+            "address",
+            "message",
         ]
-        
+
         widgets = {
             "date": forms.DateInput(attrs={"type": "date"}),
             "time": forms.TimeInput(attrs={"type": "time"}),
         }
-        
-        
 
     doctor = forms.ModelChoiceField(
-        queryset=Doctor.objects.filter(is_active=True),
-        empty_label="Select Doctor"
+        queryset=Doctor.objects.filter(is_active=True), empty_label="Select Doctor"
     )

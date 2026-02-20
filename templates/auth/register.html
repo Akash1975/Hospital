@@ -1,122 +1,51 @@
 {% extends "layout/main.html" %}
-
 {% load static %}
 
 {% block content %}
 
-<!-- AUTH PAGE STYLES -->
-<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<link rel="stylesheet" href="{% static 'css/auth-modern.css' %}">
 
-<div class="auth-wrapper">
-    <div class="auth-card">
+<div class="auth-bg">
+    <div class="auth-container">
 
-        <!-- LEFT IMAGE SECTION -->
-        <div class="auth-left">
-            <!-- Top half: image -->
-            <img src="{% static 'images/Doctor.jpg' %}" alt="Doctor Image">
+        <h2 class="auth-title">Create Your Account</h2>
+        <p class="auth-subtitle">Join our Hospital Management Platform</p>
 
-            <!-- Bottom half: solid blue -->
-            <div class="bottom-blue"></div>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
 
-            <!-- Text overlay -->
-            <div class="overlay">
-                <h5>Welcome to</h5>
-                <h3>Invision</h3>
-                <h5>Hospital Management System</h5>
-                <small>Best based healthcare management platform</small>
+            {% if form.errors %}
+            <div class="error-box">
+                Please fix the errors below.
             </div>
-        </div>
+            {% endif %}
 
+            <div class="input-row">
+                <input type="text" name="first_name" placeholder="First Name"
+                    value="{{ form.first_name.value|default:'' }}" required>
+                <input type="text" name="last_name" placeholder="Last Name"
+                    value="{{ form.last_name.value|default:'' }}" required>
+            </div>
 
-        <!-- RIGHT FORM SECTION -->
-        <div class="auth-right">
-            <h3>Create Account</h3>
+            <input type="email" name="email" placeholder="Email" value="{{ form.email.value|default:'' }}" required>
 
-            <form method="post">
-                {% csrf_token %} {% if form.errors %}
-                <div class="alert alert-danger">
-                    Please fix the errors below.
-                </div>
-                {% endif %}
+            <input type="text" name="username" placeholder="Username" value="{{ form.username.value|default:'' }}"
+                required>
 
-                <!-- Username -->
-                <div class="form-group">
-                    <label>First Name</label>
-                    <input type="text" name="first_name" class="form-control" placeholder=""
-                        value="{{ form.first_name.value|default:'' }}" required>
-                    <small class="text-danger">{{ form.first_name.errors }}</small>
+            <input type="password" name="password1" placeholder="Password" required>
+            <input type="password" name="password2" placeholder="Confirm Password" required>
 
-                    <label>Last Name</label>
-                    <input type="text" name="last_name" class="form-control" placeholder=""
-                        value="{{ form.last_name.value|default:'' }}" required>
-                    <small class="text-danger">{{ form.last_name.errors }}</small>
+            <button type="submit" class="auth-btn">
+                Register
+            </button>
 
-                    <label>Email:</label>
-                    <input type="text" name="email" class="form-control" placeholder=""
-                        value="{{ form.email.value|default:'' }}" required>
-                    <small class="text-danger">{{ form.email.errors }}</small>
-
-                    <label>Username</label>
-                    <input type="text" name="username" class="form-control" placeholder=""
-                        value="{{ form.username.value|default:'' }}" required>
-                    <small class="text-danger">{{ form.username.errors }}</small>
-                </div>
-
-                <!-- Password -->
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password1" class="form-control" placeholder="" required>
-                    <small class="text-danger">{{ form.password1.errors }}</small>
-                </div>
-
-                <!-- Confirm Password -->
-                <div class="form-group">
-                    <label>Confirm Password</label>
-                    <input type="password" name="password2" class="form-control" placeholder="" required>
-                    <small class="text-danger">{{ form.password2.errors }}</small>
-                </div>
-
-                <!-- Submit -->
-                <button type="submit" class="btn btn-primary w-100 mt-3">
-                    Sign Up
-                </button>
-
-                <!-- Login Link -->
-                <p class="text-center mt-3 fs-6">
-                    Already have an account?
-                    <a href="{% url 'login' %}">Login</a>
-                </p>
-            </form>
-        </div>
+            <p class="login-link">
+                Already have an account?
+                <a href="{% url 'login' %}">Login</a>
+            </p>
+        </form>
 
     </div>
 </div>
-
-<!-- Hidden Identity -->
-<div class="hidden-identity">
-    Created By Akya
-</div>
-
-<style>
-    .hidden-identity {
-        position: fixed;
-        bottom: 3px;
-        right: 8px;
-        font-size: 9px;
-        letter-spacing: 1px;
-        color: rgba(0, 0, 0, 0.05);
-        /* almost invisible */
-        user-select: none;
-        pointer-events: none;
-        font-family: monospace;
-        transition: 0.4s ease;
-    }
-
-    /* Only visible if someone zooms or inspects */
-    .hidden-identity:hover {
-        color: rgba(0, 0, 0, 0.3);
-    }
-</style>
-
 
 {% endblock %}

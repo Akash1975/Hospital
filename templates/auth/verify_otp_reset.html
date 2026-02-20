@@ -2,97 +2,111 @@
 {% load static %}
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<link rel="stylesheet" href="{% static 'css/auth-modern.css' %}">
 
 <style>
     .top-message {
         position: fixed;
-        top: 10px;
+        top: 20px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 9999;
         width: 90%;
         max-width: 500px;
-        text-align: center;
+    }
+
+    .otp-note {
+        font-size: 13px;
+        opacity: 0.7;
+        margin-bottom: 15px;
+    }
+
+    .resend-link {
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .resend-link a {
+        color: #00d4ff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .resend-link a:hover {
+        text-decoration: underline;
     }
 </style>
 
-<!-- MESSAGE -->
+<!-- Messages -->
 {% if messages %}
-{% for message in messages %}
-<div class="alert alert-{{ message.tags }} top-message" id="autoHideMsg">
-    {{ message }}
+<div class="top-message">
+    {% for message in messages %}
+    <div class="alert 
+        {% if message.tags == 'success' %}alert-success
+        {% elif message.tags == 'error' %}alert-danger
+        {% elif message.tags == 'warning' %}alert-warning
+        {% elif message.tags == 'info' %}alert-info
+        {% else %}alert-secondary
+        {% endif %}
+        alert-dismissible fade show shadow-lg" role="alert">
+
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
 </div>
-{% endfor %}
 {% endif %}
 
-<div class="auth-wrapper">
-    <div class="auth-card">
+<div class="auth-bg">
+    <div class="auth-container">
 
-        <!-- LEFT IMAGE -->
-        <div class="auth-left">
-            <img src="{% static 'images/Doctor.jpg' %}" alt="Doctor">
-            <div class="bottom-blue"></div>
+        <h2 class="auth-title">OTP Verification</h2>
+        <p class="auth-subtitle">Reset your password securely</p>
 
-            <div class="overlay">
-                <h5>OTP Verification</h5>
-                <h3>Invision</h3>
-                <small>Reset your password securely</small>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+
+            <p class="otp-note">
+                If OTP is not visible, please check your spam folder.
+            </p>
+
+            <!-- OTP -->
+            <input type="text" name="otp" placeholder="Enter OTP" required>
+
+            <!-- New Password -->
+            <input type="password" name="new_password" placeholder="New Password" required>
+
+            <!-- Confirm Password -->
+            <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+
+            <div class="resend-link">
+                Didn’t receive OTP?
+                <a href="{% url 'resend_otp' %}">
+                    Resend OTP
+                </a>
             </div>
-        </div>
 
-        <!-- RIGHT FORM -->
-        <div class="auth-right">
-            <h3>Verify OTP</h3>
-            <p>important : if otp not show plz check spam. Thank you!</p>
+            <button type="submit" class="auth-btn">
+                Reset Password
+            </button>
 
-            <form method="post">
-                {% csrf_token %}
-
-                <!-- OTP -->
-                <div class="form-group">
-                    <label>Enter OTP</label>
-                    <input type="text" name="otp" class="form-control" placeholder="Enter OTP" required>
-                </div>
-
-                <!-- New Password -->
-                <div class="form-group">
-                    <label>New Password</label>
-                    <input type="password" name="new_password" class="form-control" placeholder="Enter new password"
-                        required>
-                </div>
-
-                <!-- Confirm Password -->
-                <div class="form-group">
-                    <label>Confirm Password</label>
-                    <input type="password" name="confirm_password" class="form-control" placeholder="Confirm password"
-                        required>
-                </div>
-                <p>
-                    Didn't receive OTP?
-                    <a href="{% url 'resend_otp' %}" class="text-primary">
-                        Resend OTP
-                    </a>
-                </p>
-
-                <button type="submit" class="btn btn-primary w-100 mt-3">
-                    Reset Password
-                </button>
-
-                <p class="text-center mt-3 fs-6">
-                    Back to <a href="{% url 'login' %}" class="fs-6">Login</a>
-                </p>
-            </form>
-        </div>
+            <p class="login-link">
+                Back to <a href="{% url 'login' %}">Login</a>
+            </p>
+        </form>
 
     </div>
 </div>
 
+<!-- Auto Hide Messages -->
 <script>
     setTimeout(function () {
-        const msg = document.getElementById("autoHideMsg");
-        if (msg) { msg.style.display = "none"; }
-    }, 5000);
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function (alert) {
+            alert.classList.remove('show');
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 4000);
 </script>
 
 {% endblock %}
