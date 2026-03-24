@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "cloudinary",
     "cloudinary_storage",
     'widget_tweaks',
+    "assistant",
 ]
 
 MIDDLEWARE = [
@@ -189,3 +190,5 @@ cloudinary.config(
 # DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+OPENROUTER_API_KEY = config("OPENROUTER_API_KEY")

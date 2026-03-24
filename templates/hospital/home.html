@@ -1,372 +1,510 @@
-{% extends "layout/main.html" %}
-{% load static %}
-{% block content %}
-{% if user.is_authenticated %}
+{% extends "layout/main.html" %} {% load static %} {% block content %} {% if user.is_authenticated %}
 
 <style>
-  body {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: #fff;
-    scroll-behavior: smooth;
-  }
-
-  .glass-nav {
-    backdrop-filter: blur(12px);
-    background: rgba(0, 0, 0, 0.5);
-  }
-
-  .navbar-brand {
-    font-size: 1.4rem;
-  }
-
-  .profile-panel {
-    position: fixed;
-    top: 0;
-    right: -360px;
-    width: 360px;
-    height: 100%;
-    background: rgba(20, 20, 20, 0.95);
-    backdrop-filter: blur(15px);
-    transition: right 0.3s ease-in-out;
-    z-index: 1050;
-    color: white;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .profile-panel.active {
-    right: 0;
-  }
-
-  .profile-panel a {
-    border-radius: 10px;
-    margin-bottom: 10px;
-  }
-
-  #home {
-    padding-top: 120px;
-    padding-bottom: 100px;
-  }
-
-  .hero-title {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #00d4ff;
-  }
-
-  .card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
-    transition: 0.3s;
-    border-radius: 15px;
-  }
-
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-  }
-
-  .btn-primary {
-    background: linear-gradient(45deg, #00d4ff, #007bff);
-    border: none;
-  }
-
-  .btn-primary:hover {
-    box-shadow: 0 0 15px #00d4ff;
-  }
-
-  .developer-sign {
-    position: absolute;
-    bottom: 5px;
-    right: 15px;
-    font-size: 0.7rem;
-    color: #00d4ff;
-    opacity: 0.06;
-    transition: all 0.4s ease;
-  }
-
-  .hospital-footer {
-    position: relative;
-  }
-
-  .btn-light:hover {
-    box-shadow: 0 0 15px #fff;
-  }
-
-  .hospital-footer {
-    background: #0f2027;
-  }
-
-  .animated-message {
-    animation: fadeSlide 0.5s ease forwards;
-  }
-
-  @keyframes fadeSlide {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        color: #fff;
+        scroll-behavior: smooth;
     }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    
+    .glass-nav {
+        backdrop-filter: blur(12px);
+        background: rgba(0, 0, 0, 0.5);
     }
-  }
+    
+    .navbar-brand {
+        font-size: 1.4rem;
+    }
+    
+    .profile-panel {
+        position: fixed;
+        top: 0;
+        right: -360px;
+        width: 360px;
+        height: 100%;
+        background: rgba(20, 20, 20, 0.95);
+        backdrop-filter: blur(15px);
+        transition: right 0.3s ease-in-out;
+        z-index: 1050;
+        color: white;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .profile-panel.active {
+        right: 0;
+    }
+    
+    .profile-panel a {
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+    
+    #home {
+        padding-top: 120px;
+        padding-bottom: 100px;
+    }
+    
+    .hero-title {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #00d4ff;
+    }
+    
+    .card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        transition: 0.3s;
+        border-radius: 15px;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(45deg, #00d4ff, #007bff);
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        box-shadow: 0 0 15px #00d4ff;
+    }
+    
+    .developer-sign {
+        position: absolute;
+        bottom: 5px;
+        right: 15px;
+        font-size: 0.7rem;
+        color: #00d4ff;
+        opacity: 0.06;
+        transition: all 0.4s ease;
+    }
+    
+    .hospital-footer {
+        position: relative;
+    }
+    
+    .btn-light:hover {
+        box-shadow: 0 0 15px #fff;
+    }
+    
+    .hospital-footer {
+        background: #0f2027;
+    }
+    
+    .animated-message {
+        animation: fadeSlide 0.5s ease forwards;
+    }
+    
+    @keyframes fadeSlide {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    /* AI Assistant */
+    
+    #chatToggle {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        background: #00d4ff;
+        border: none;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        font-size: 22px;
+        color: #000;
+        cursor: pointer;
+        z-index: 2000;
+    }
+    
+    #chatBox {
+        position: fixed;
+        bottom: 100px;
+        right: 25px;
+        width: 320px;
+        height: 420px;
+        background: rgba(0, 0, 0, 0.9);
+        border-radius: 15px;
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 2000;
+    }
+    
+    #chatHeader {
+        background: #00d4ff;
+        color: #000;
+        padding: 10px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    #chatMessages {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        font-size: 14px;
+    }
+    
+    #chatInputArea {
+        display: flex;
+        padding: 10px;
+    }
+    
+    #chatInputArea input {
+        flex: 1;
+        border-radius: 10px;
+        border: none;
+        padding: 5px;
+    }
+    
+    #chatInputArea button {
+        margin-left: 5px;
+        border: none;
+        border-radius: 8px;
+        background: #00d4ff;
+    }
 </style>
 
 <!-- ================= MESSAGES ================= -->
 {% if messages %}
 <div class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 2000;">
-  {% for message in messages %}
-  <div class="alert alert-success shadow animated-message text-center">
-    {{ message }}
-  </div>
-  {% endfor %}
+    {% for message in messages %}
+    <div class="alert alert-success shadow animated-message text-center">
+        {{ message }}
+    </div>
+    {% endfor %}
 </div>
 
 <script>
-  setTimeout(() => {
-    document.querySelectorAll('.alert').forEach(msg => msg.remove());
-  }, 4000);
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(msg => msg.remove());
+    }, 4000);
 </script>
 {% endif %}
 
 <!-- ================= NAVBAR ================= -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
-  <div class="container">
-    <a class="navbar-brand fw-bold text-info" href="#">Invision Hospital</a>
+    <div class="container">
+        <a class="navbar-brand fw-bold text-info" href="#">Invision Hospital</a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto align-items-center">
-        <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="#doctors">Doctors</a></li>
-        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="#doctors">Doctors</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
 
-        <li class="nav-item ms-3">
-          {% if user.profile.profile_image %}
-          <img src="{{ user.profile.profile_image.url }}" id="profileIcon" class="rounded-circle border border-info"
-            width="50" height="50" style="cursor:pointer;">
-          {% else %}
-          <img
-            src="https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=00d4ff&color=fff"
-            id="profileIcon" class="rounded-circle border border-info" width="50" height="50" style="cursor:pointer;">
-          {% endif %}
-        </li>
-      </ul>
+                <li class="nav-item ms-3">
+                    {% if user.profile.profile_image %}
+                    <img src="{{ user.profile.profile_image.url }}" id="profileIcon" class="rounded-circle border border-info" width="50" height="50" style="cursor:pointer;"> {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=00d4ff&color=fff" id="profileIcon" class="rounded-circle border border-info" width="50" height="50" style="cursor:pointer;"> 
+                    {% endif%}
+                </li>
+            </ul>
+        </div>
     </div>
-  </div>
 </nav>
 
 <!-- ================= PROFILE SIDEBAR ================= -->
 <div id="profilePanel" class="profile-panel">
+    <div class="p-4">
+        <a href="{% url 'home' %}" class="btn btn-outline-info mb-3">❌</a>
+        <div class="text-center">
+            {% if user.profile.profile_image %}
+            <img src="{{ user.profile.profile_image.url }}" class="rounded-circle border border-2" width="80" height="80" style="cursor:pointer;"> 
+            {% else%}
+            <img src="https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=0d6efd&color=fff" class="rounded-circle border border-2 border-primary" width="80" height="80" style="cursor:pointer;"> {% endif %}
+            <h5 class="mt-3">{{ user.first_name }} {{ user.last_name }}</h5>
+            <h6>@{{ user.username }}</h6>
+        </div>
+        <hr>
+        <div class="text-left">
+            <h6>First Name : {{user.first_name }}</h6>
+            <h6>Last Name : {{user.last_name }}</h6>
+            <p>Email: {{ user.email }}</p>
+        </div>
+        <hr>
 
-  <div class="p-4">
-    <div class="text-center">
-      {% if user.profile.profile_image %}
-      <img src="{{ user.profile.profile_image.url }}" class="rounded-circle border border-2" width="80" height="80"
-        style="cursor:pointer;">
-      {% else %}
-      <img src="https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=0d6efd&color=fff"
-        class="rounded-circle border border-2 border-primary" width="80" height="80" style="cursor:pointer;">
-      {% endif %}
-      <h5 class="mt-3">{{ user.first_name }} {{ user.last_name }}</h5>
-      <h6>@{{ user.username }}</h6>
-    </div>
-    <hr>
-    <div class="text-left">
-      <h6>First Name : {{user.first_name }}</h6>
-      <h6>Last Name : {{user.last_name }}</h6>
-      <p>Email: {{ user.email }}</p>
-    </div>
-    <hr>
-
-    <a href="{% url 'my_appointment' %}" class="btn btn-outline-light w-100 mb-3">
+        <a href="{% url 'my_appointment' %}" class="btn btn-outline-light w-100 mb-3">
       My Appointment
     </a>
 
-    <a href="{% url 'edit_profile' %}" class="btn btn-primary w-100 mb-3">
+        <a href="{% url 'edit_profile' %}" class="btn btn-primary w-100 mb-3">
       Edit Profile
     </a>
 
-    <a href="{% url 'login' %}" class="btn btn-outline-danger w-100">
+        <a href="{% url 'login' %}" class="btn btn-outline-danger w-100">
       Logout
     </a>
-  </div>
+    </div>
 
 </div>
 
 <!-- ================= HERO SECTION ================= -->
 <section id="home" class="text-center">
-  <div class="container">
-    <h1 class="hero-title">Welcome to Invision Hospital</h1>
-    <p class="lead mb-4">
-      Advanced Healthcare. Compassionate Care.
-    </p>
-    <a href="{% url 'appointment' %}" class="btn btn-primary btn-lg">
+    <div class="container">
+        <h1 class="hero-title">Welcome to Invision Hospital</h1>
+        <p class="lead mb-4">
+            Advanced Healthcare. Compassionate Care.
+        </p>
+        <a href="{% url 'appointment' %}" class="btn btn-primary btn-lg">
       Book Appointment
     </a>
-  </div>
+    </div>
 </section>
 
 <!-- ================= SERVICES ================= -->
 <section id="services" class="py-5">
-  <div class="container text-center">
-    <h2 class="fw-bold mb-5">Our Services</h2>
+    <div class="container text-center">
+        <h2 class="fw-bold mb-5">Our Services</h2>
 
-    <div class="row g-4">
-      {% for service in services %}
-      <div class="col-md-4">
-        <div class="card p-4 h-100">
-          <h5>{{ service.service_name }}</h5>
-          <p>{{ service.service_description }}</p>
+        <div class="row g-4">
+            {% for service in services %}
+            <div class="col-md-4">
+                <div class="card p-4 h-100">
+                    <h5>{{ service.service_name }}</h5>
+                    <p>{{ service.service_description }}</p>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-      </div>
-      {% endfor %}
     </div>
-  </div>
 </section>
 
 {% if about %}
 <section id="about" class="py-5">
-  <div class="container">
-    <h2 class="fw-bold mb-5 text-center">About Us</h2>
+    <div class="container">
+        <h2 class="fw-bold mb-5 text-center">About Us</h2>
 
-    <div class="row align-items-center g-4">
+        <div class="row align-items-center g-4">
 
-      <!-- Image Column -->
-      <div class="col-12 col-lg-5 text-center">
-        {% if about.about_image %}
-        <img src="{{ about.about_image.url }}" class="img-fluid rounded shadow" width="500">
-        {% endif %}
-      </div>
+            <!-- Image Column -->
+            <div class="col-12 col-lg-5 text-center">
+                {% if about.about_image %}
+                <img src="{{ about.about_image.url }}" class="img-fluid rounded shadow card" width="500"> {% endif %}
+            </div>
 
-      <!-- Text Column -->
-      <div class="col-12 col-lg-7">
-        <div class="card p-4 border-0 shadow-sm h-100">
-          <p class="mb-0">
-            {{ about.about_text }}
-          </p>
+            <!-- Text Column -->
+            <div class="col-12 col-lg-7">
+                <div class="card p-4 border-0 shadow-sm h-100">
+                    <p class="mb-0">
+                        {{ about.about_text }}
+                    </p>
+                </div>
+            </div>
+
         </div>
-      </div>
-
     </div>
-  </div>
 </section>
 {% endif %}
 
 <!-- ================= DOCTORS ================= -->
 <section id="doctors" class="py-5">
-  <div class="container text-center">
-    <h2 class="fw-bold mb-5">Meet Our Doctors</h2>
+    <div class="container text-center">
+        <h2 class="fw-bold mb-5">Meet Our Doctors</h2>
 
-    <div class="row g-4">
-      {% for doctor in about_doctors %}
-      <div class="col-md-4">
-        <div class="card p-3 h-100">
-          <img src="{{ doctor.doctor_image.url }}" alt="">
-          <h5 class="mt-5">Dr. {{ doctor.name }}</h5>
-          <p>{{ doctor.specialization }}</p>
-          <p>{{ doctor.phone }}</p>
-          <p>{{ doctor.email }}</p>
+        <div class="row g-4">
+            {% for doctor in about_doctors %}
+            <div class="col-md-4">
+                <div class="card p-3 h-100">
+                    <img src="{{ doctor.doctor_image.url }}" alt="">
+                    <h5 class="mt-5">Dr. {{ doctor.name }}</h5>
+                    <p>{{ doctor.specialization }}</p>
+                    <p>{{ doctor.phone }}</p>
+                    <p>{{ doctor.email }}</p>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-      </div>
-      {% endfor %}
     </div>
-  </div>
 </section>
 
 <!-- ================= CONTACT ================= -->
 <section id="contact" class="py-5 text-center">
-  <div class="container">
-    <h2>Book Your Appointment Today</h2>
-    <a href="{% url 'appointment' %}" class="btn btn-primary btn-lg mt-3">
+    <div class="container">
+        <h2>Book Your Appointment Today</h2>
+        <a href="{% url 'appointment' %}" class="btn btn-primary btn-lg mt-3">
       Book Now
     </a>
-  </div>
+    </div>
 </section>
+
+<!-- ================= AI ASSISTANT ================= -->
+<div id="aiAssistant">
+
+    <!-- Chat Toggle Button -->
+    <button id="chatToggle">💬</button>
+
+    <!-- Chat Box -->
+    <div id="chatBox">
+        <div id="chatHeader">
+            🤖 Hospital Assistant
+            <span style="cursor: pointer;" onclick="toggleChat()">✖</span>
+        </div>
+
+        <div id="chatMessages"></div>
+
+        <div id="chatInputArea">
+            <input type="text" id="msg" placeholder="Ask something..." />
+            <button onclick="sendMsg()">➤</button>
+            <button onclick="startListening()">🎤</button>
+        </div>
+    </div>
+
+</div>
 
 <!-- ================= PREMIUM FOOTER ================= -->
 <footer class="hospital-footer pt-5 pb-3">
 
-  <div class="container">
-    <div class="row text-center text-md-start">
+    <div class="container">
+        <div class="row text-center text-md-start">
 
-      <!-- Hospital Info -->
-      <div class="col-md-4 mb-4">
-        <h4 class="footer-title">Invision Hospital</h4>
-        <p class="footer-text">
-          Advanced Healthcare. Compassionate Care.
-        </p>
-        <p class="footer-text">
-          Pune, Maharashtra, India
-        </p>
-      </div>
+            <!-- Hospital Info -->
+            <div class="col-md-4 mb-4">
+                <h4 class="footer-title">Invision Hospital</h4>
+                <p class="footer-text">
+                    Advanced Healthcare. Compassionate Care.
+                </p>
+                <p class="footer-text">
+                    Pune, Maharashtra, India
+                </p>
+            </div>
 
-      <!-- Quick Links -->
-      <div class="col-md-4 mb-4">
-        <h5 class="footer-heading">Quick Links</h5>
-        <ul class="footer-links list-unstyled">
-          <li><a class="text-decoration-none text-light" href="#home">Home</a></li>
-          <li><a class="text-decoration-none text-light" href="#services">Services</a></li>
-          <li><a class="text-decoration-none text-light" href="#doctors">Doctors</a></li>
-          <li><a class="text-decoration-none text-light" href="#contact">Contact</a></li>
-        </ul>
-      </div>
+            <!-- Quick Links -->
+            <div class="col-md-4 mb-4">
+                <h5 class="footer-heading">Quick Links</h5>
+                <ul class="footer-links list-unstyled">
+                    <li><a class="text-decoration-none text-light" href="#home">Home</a></li>
+                    <li><a class="text-decoration-none text-light" href="#services">Services</a></li>
+                    <li><a class="text-decoration-none text-light" href="#doctors">Doctors</a></li>
+                    <li><a class="text-decoration-none text-light" href="#contact">Contact</a></li>
+                </ul>
+            </div>
 
-      <!-- Contact Info -->
-      <div class="col-md-4 mb-4">
-        <h5 class="footer-heading">Contact Us</h5>
-        <p class="footer-text">📞 +91 98765 43210</p>
-        <p class="footer-text">✉ support@invisionhospital.com</p>
+            <!-- Contact Info -->
+            <div class="col-md-4 mb-4">
+                <h5 class="footer-heading">Contact Us</h5>
+                <p class="footer-text">📞 +91 98765 43210</p>
+                <p class="footer-text">✉ support@invisionhospital.com</p>
 
-        <!-- Social Icons -->
-        <div class="social-icons mt-3">
-          <a href="#"><i class="bi bi-facebook"></i></a>
-          <a href="#"><i class="bi bi-instagram"></i></a>
-          <a href="#"><i class="bi bi-twitter-x"></i></a>
-          <a href="#"><i class="bi bi-linkedin"></i></a>
+                <!-- Social Icons -->
+                <div class="social-icons mt-3">
+                    <a href="#"><i class="bi bi-facebook"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+
         </div>
-      </div>
 
+        <hr class="footer-divider">
+
+        <div class="text-center small">
+            © 2026 Invision Hospital | All Rights Reserved
+        </div>
     </div>
-
-    <hr class="footer-divider">
-
-    <div class="text-center small">
-      © 2026 Invision Hospital | All Rights Reserved
+    <div class="developer-sign">
+        Made with ❤️ by Akya
     </div>
-  </div>
-  <div class="developer-sign">
-    Made with ❤️ by Akya
-  </div>
 
 </footer>
 
 <!-- ================= SCRIPT ================= -->
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const profileIcon = document.getElementById("profileIcon");
-    const profilePanel = document.getElementById("profilePanel");
+    document.addEventListener("DOMContentLoaded", function () {
+        const profileIcon = document.getElementById("profileIcon");
+        const profilePanel = document.getElementById("profilePanel");
 
-    profileIcon.addEventListener("click", function (e) {
-      e.stopPropagation();
-      profilePanel.classList.toggle("active");
+        profileIcon.addEventListener("click", function (e) {
+            e.stopPropagation();
+            profilePanel.classList.toggle("active");
+        });
+
+        document.addEventListener("click", function (e) {
+            if (!profilePanel.contains(e.target) && !profileIcon.contains(e.target)) {
+                profilePanel.classList.remove("active");
+            }
+        });
     });
 
-    document.addEventListener("click", function (e) {
-      if (!profilePanel.contains(e.target) && !profileIcon.contains(e.target)) {
-        profilePanel.classList.remove("active");
-      }
-    });
-  });
+    function toggleChat() {
+        const chatBox = document.getElementById("chatBox");
+        chatBox.style.display = chatBox.style.display === "flex" ? "none" : "flex";
+    }
+
+    document.getElementById("chatToggle").onclick = toggleChat;
+
+    async function sendMsg(isVoice = false) {
+        const input = document.getElementById("msg");
+        const chat = document.getElementById("chatMessages");
+        const message = input.value.trim();
+        if (!message) return;
+
+        chat.innerHTML += `<p><b>You:</b> ${message}</p>`;
+        input.value = "";
+
+        const typingIndicator = document.createElement("p");
+        typingIndicator.id = "typingIndicator";
+        typingIndicator.innerHTML = `<b>AI:</b> <i>Typing...</i>`;
+        chat.appendChild(typingIndicator);
+        chat.scrollTop = chat.scrollHeight;
+
+        try {
+            const res = await fetch("/assistant/api/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message }),
+            });
+            const data = await res.json();
+            typingIndicator.remove();
+            chat.innerHTML += `<p><b>AI:</b> ${data.reply}</p>`;
+            if (isVoice) speak(data.reply);
+            chat.scrollTop = chat.scrollHeight;
+        } catch (err) {
+            typingIndicator.remove();
+            chat.innerHTML += `<p style="color:red;"><b>AI:</b> Server error</p>`;
+            console.error(err);
+        }
+    }
+
+    function startListening() {
+        if (!('webkitSpeechRecognition' in window)) { alert("Voice not supported in this browser"); return; }
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = "en-IN";
+        recognition.onresult = function (event) {
+            const text = event.results[0][0].transcript;
+            const chat = document.getElementById("chatMessages");
+            chat.innerHTML += `<p style="color:lightgreen;"><b>You 🎤:</b> ${text}</p>`;
+            document.getElementById("msg").value = text;
+            sendMsg(true);
+        };
+        recognition.start();
+    }
+
+    function speak(text) {
+        const speech = new SpeechSynthesisUtterance(text);
+        speech.lang = "en-IN";
+        window.speechSynthesis.speak(speech);
+    }
 </script>
 
-{% endif %}
+{% endif %} 
+
 {% endblock %}

@@ -23,5 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('dashboard/', include('hp_management.urls')),
     path('', include("authentication.urls")),
+    path("assistant/", include("assistant.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

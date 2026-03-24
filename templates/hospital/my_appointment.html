@@ -2,35 +2,34 @@
 {% load static %}
 
 {% block content %}
-<div class="container my-5">
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h3 class="fw-bold text-primary">
-                <i class="bi bi-calendar-week"></i> My Appointments
-            </h3>
-            <p class="text-muted mb-0">View your booked hospital appointments</p>
-        </div>
-        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back
-        </a>
+<div class="container my-5">
+    <a href="{% url 'home' %}" class="btn btn-outline-info mb-3">Back</a>
+    <!-- Page Header -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold display-6 text-info">
+            My Appointments
+        </h2>
+        <p class="text-light fs-6">
+            View and manage your scheduled hospital visits.
+        </p>
     </div>
 
     {% if appointments %}
-    <!-- Appointment Table -->
-    <div class="card shadow-lg border-0 appointment-card">
+
+    <!-- Glass Card -->
+    <div class="card appointment-card shadow-lg mx-auto">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-primary">
+                <table class="table align-middle mb-0 text-white">
+                    <thead>
                         <tr>
                             <th>Sr No</th>
                             <th>Patient</th>
                             <th>Contact</th>
                             <th>Date</th>
                             <th>Time</th>
-                            <th>Doctor_Name</th>
+                            <th>Doctor</th>
                             <th>Message</th>
                             <th>Booked On</th>
                             <th>Status</th>
@@ -43,7 +42,7 @@
 
                             <td>
                                 <div class="fw-semibold">{{ appointment.name }}</div>
-                                <small class="text-muted">{{ appointment.email }}</small>
+                                <small class="text-light">{{ appointment.email }}</small>
                             </td>
 
                             <td>{{ appointment.phone }}</td>
@@ -63,7 +62,6 @@
                             <td>
                                 <span class="badge bg-light text-dark">
                                     {{ appointment.doctor|default:"-" }}
-
                                 </span>
                             </td>
 
@@ -72,19 +70,28 @@
                             </td>
 
                             <td>
-                                <small class="text-muted">
+                                <small class="text-light">
                                     {{ appointment.created_at|date:"d M Y, h:i A" }}
                                 </small>
                             </td>
+
                             <td>
                                 {% if appointment.appointment_status == "CONFIRMED" %}
-                                <span class="badge bg-success">{{ appointment.appointment_status }}</span>
+                                <span class="badge bg-success">
+                                    {{ appointment.appointment_status }}
+                                </span>
                                 {% elif appointment.appointment_status == "PENDING" %}
-                                <span class="badge bg-warning text-dark">{{ appointment.appointment_status }}</span>
+                                <span class="badge bg-warning text-dark">
+                                    {{ appointment.appointment_status }}
+                                </span>
                                 {% elif appointment.appointment_status == "CANCELLED" %}
-                                <span class="badge bg-danger">{{ appointment.appointment_status }}</span>
+                                <span class="badge bg-danger">
+                                    {{ appointment.appointment_status }}
+                                </span>
                                 {% else %}
-                                <span class="badge bg-secondary">{{ appointment.appointment_status }}</span>
+                                <span class="badge bg-secondary">
+                                    {{ appointment.appointment_status }}
+                                </span>
                                 {% endif %}
                             </td>
 
@@ -97,41 +104,96 @@
     </div>
 
     {% else %}
+
     <!-- Empty State -->
-    <div class="card shadow-sm border-0 text-center p-5">
-        <img src="{% static 'images/no-data.svg' %}" alt="No Appointments" style="max-width: 180px;"
+    <div class="card appointment-card text-center p-5 mx-auto">
+        <img src="{% static '' %}" alt="No Appointments" style="max-width: 180px;"
             class="mx-auto mb-3">
+
         <h5 class="fw-semibold">No Appointments Found</h5>
-        <p class="text-muted">
+        <p class="text-light">
             You haven’t booked any appointments yet.
         </p>
-        <a href="{% url 'appointment' %}" class="btn btn-primary mt-2">
-            <i class="bi bi-plus-circle"></i> Book Appointment
+
+        <a href="{% url 'appointment' %}" class="btn btn-gradient mt-3 px-4">
+            Book Appointment
         </a>
     </div>
+
     {% endif %}
 
 </div>
 
-<!-- Extra Styling -->
+<!-- ================= MODERN GLASS STYLING ================= -->
 <style>
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #fff;
+    }
+
+    h2 {
+        color: #00d4ff;
+    }
+
+    .text-light {
+        color: #dcdcdc !important;
+    }
+
+    /* Glass Card */
     .appointment-card {
-        border-radius: 16px;
-        overflow: hidden;
-        animation: fadeUp 0.6s ease;
+        max-width: 1200px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        color: #fff;
+        transition: 0.3s ease;
     }
 
-    table th,
-    table td {
-        vertical-align: middle;
+    /*.appointment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 25px rgba(0, 212, 255, 0.4);
+    } */
+
+    /* Table */
+    table {
+        color: #fff;
     }
 
-    table thead th {
+    table thead {
+        background: rgba(0, 212, 255, 0.2);
+    }
+
+    table th {
         font-weight: 600;
+        padding: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    table td {
+        padding: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     table tbody tr:hover {
-        background-color: #f8f9fa;
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Gradient Button */
+    .btn-gradient {
+        background: linear-gradient(45deg, #00d4ff, #007bff);
+        color: #fff;
+        font-weight: 600;
+        border-radius: 12px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 20px #00d4ff;
     }
 </style>
 
